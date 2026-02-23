@@ -1,0 +1,136 @@
+// Audius SDK helpers — REST API wrapper for client-side use
+// The @audius/sdk npm package has Node.js dependencies that break webpack
+// So we use the REST API directly but expose the same typed helpers
+
+const API_BASE = 'https://api.audius.co/v1';
+const API_KEY = process.env.NEXT_PUBLIC_AUDIUS_API_KEY || '0xae4d3e296787e296b704511d724e7fac088ce029';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function audiusFetch<T>(endpoint: string, params?: Record<string, string>): Promise<T | null> {
+    try {
+        const url = new URL(`${API_BASE}${endpoint}`);
+        if (params) {
+            Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+        }
+        const res = await fetch(url.toString(), {
+            headers: { 'x-api-key': API_KEY, Accept: 'application/json' },
+        });
+        if (!res.ok) return null;
+        const json = await res.json();
+        return json?.data ?? null;
+    } catch {
+        return null;
+    }
+}
+
+// ---- Types ----
+
+export interface SdkTrack {
+    id: string;
+    title: string;
+    user: { id: string; name: string; handle: string; profilePicture?: Record<string, string> };
+    artwork?: Record<string, string>;
+    playCount: number;
+    favoriteCount: number;
+    repostCount: number;
+    duration: number;
+    genre: string;
+    permalink: string;
+}
+
+export interface SdkUser {
+    id: string;
+    name: string;
+    handle: string;
+    bio?: string;
+    profilePicture?: Record<string, string>;
+    coverPhoto?: Record<string, string>;
+    followerCount: number;
+    trackCount: number;
+    isVerified: boolean;
+}
+
+// Map snake_case API responses to camelCase types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapTrack(raw: any): SdkTrack {
+    return {
+        id: raw.id,
+        title: raw.title,
+        user: {
+            id: raw.user?.id,
+            name: raw.user?.name,
+            handle: raw.user?.handle,
+            profilePicture: raw.user?.profile_picture,
+        },
+        artwork: raw.artwork,
+        playCount: raw.play_count ?? 0,
+        favoriteCount: raw.favorite_count ?? 0,
+        repostCount: raw.repost_count ?? 0,
+        duration: raw.duration ?? 0,
+        genre: raw.genre ?? '',
+        permalink: raw.permalink ?? '',
+    };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapUser(raw: any): SdkUser {
+    return {
+        id: raw.id,
+        name: raw.name,
+        handle: raw.handle,
+        bio: raw.bio,
+        profilePicture: raw.profile_picture,
+        coverPhoto: raw.cover_photo,
+        followerCount: raw.follower_count ?? 0,
+        trackCount: raw.track_count ?? 0,
+        isVerified: raw.is_verified ?? false,
+    };
+}
+
+// ---- Typed helpers ----
+
+export async function sdkSearchTracks(query: string, limit = 20): Promise<SdkTrack[]> {
+    const data = await audiusFetch<unknown[]>('/tracks/search', { query, limit: String(limit) });
+    return (data ?? []).map(mapTrack);
+}
+
+export async function sdkSearchUsers(query: string, limit = 10): Promise<SdkUser[]> {
+    const data = await audiusFetch<unknown[]>('/users/search', { query, limit: String(limit) });
+    return (data ?? []).map(mapUser);
+}
+
+export async function sdkGetTrack(trackId: string): Promise<SdkTrack | null> {
+    const data = await audiusFetch<unknown>(`/tracks/${trackId}`);
+    return data ? mapTrack(data) : null;
+}
+
+export function sdkStreamUrl(trackId: string): string {
+    return `${API_BASE}/tracks/${trackId}/stream?api_key=${API_KEY}`;
+}
+
+// Format helpers
+export function formatCount(n: number): string {
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+    if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+    return String(n ?? 0);
+}
+
+export function formatDuration(sec: number): string {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+// ---- Tracks ----
+
+export async function sdkGetTrendingTracks(limit = 10, genre?: string): Promise<SdkTrack[]> {
+    const params: Record<string, string> = { limit: String(limit), time: "week" };
+    if (genre && genre !== "All" && genre !== "All Genres") params.genre = genre;
+    const data = await audiusFetch<unknown[]>('/tracks/trending', params);
+    return (data ?? []).map(mapTrack);
+}
+
+export async function sdkGetUndergroundTrendingTracks(limit = 10): Promise<SdkTrack[]> {
+    const data = await audiusFetch<unknown[]>('/tracks/trending/underground', { limit: String(limit) });
+    return (data ?? []).map(mapTrack);
+}
