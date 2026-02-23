@@ -45,7 +45,7 @@ export const getUserSession = (chatId: number, userInfo?: Partial<UserSession>):
             }
         });
     }
-    
+
     const session = userSessions.get(chatId)!;
     session.lastActivity = new Date();
     return session;
@@ -150,13 +150,13 @@ export const sendSettings = async (chatId: number) => {
         parse_mode: 'Markdown',
         reply_markup: {
             inline_keyboard: [
-                [{ 
+                [{
                     text: `🔔 Notifications: ${session.preferences.notificationEnabled ? '✅ On' : '❌ Off'}`,
-                    callback_data: "toggle_notifications" 
+                    callback_data: "toggle_notifications"
                 }],
-                [{ 
+                [{
                     text: `▶️ Auto-play: ${session.preferences.autoPlay ? '✅ On' : '❌ Off'}`,
-                    callback_data: "toggle_autoplay" 
+                    callback_data: "toggle_autoplay"
                 }],
                 [{ text: "🎵 Genre Preferences", callback_data: "genre_settings" }],
                 [{ text: "📱 Connect Wallet", callback_data: "connect_wallet" }],
@@ -176,7 +176,7 @@ export const sendHelp = async (chatId: number) => {
         reply_markup: {
             inline_keyboard: [
                 [{ text: "📚 Documentation", url: "https://docs.sonara.music" }],
-                [{ text: "💬 Support Chat", url: "https://t.me/sonara_support" }],
+                [{ text: "💬 Support Chat", url: "https://t.me/iSonara_bot" }],
                 [{ text: "🐦 Twitter Updates", url: "https://twitter.com/sonara_music" }],
                 [{ text: "🔙 Back to Menu", callback_data: "main_menu" }]
             ]

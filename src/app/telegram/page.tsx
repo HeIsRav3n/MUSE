@@ -15,18 +15,18 @@ export default function TelegramMiniApp() {
             setIsTelegram(true);
             const webApp = window.Telegram.WebApp;
             setTg(webApp);
-            
+
             // Initialize Telegram WebApp
             webApp.ready();
             webApp.expand();
             webApp.enableClosingConfirmation();
-            
+
             // Set theme colors
             document.documentElement.style.setProperty('--tg-theme-bg-color', webApp.backgroundColor);
             document.documentElement.style.setProperty('--tg-theme-text-color', webApp.textColor);
             document.documentElement.style.setProperty('--tg-theme-button-color', webApp.buttonColor);
             document.documentElement.style.setProperty('--tg-theme-button-text-color', webApp.buttonTextColor);
-            
+
             // Set background color
             document.body.style.backgroundColor = webApp.backgroundColor;
         }
@@ -99,7 +99,7 @@ export default function TelegramMiniApp() {
                                 <p className="text-xs text-sonara-text-muted">Music Protocol</p>
                             </div>
                         </div>
-                        
+
                         {isTelegram && (
                             <button
                                 onClick={() => tg?.close()}
@@ -168,7 +168,7 @@ export default function TelegramMiniApp() {
                             Open Full App
                         </button>
                         <button
-                            onClick={() => openExternal("https://t.me/sonara_bot")}
+                            onClick={() => openExternal("https://t.me/iSonara_bot")}
                             className="bg-sonara-surface border border-sonara-border text-sonara-text text-sm font-medium py-2 px-3 rounded-lg hover:bg-sonara-surface/80 transition-colors"
                         >
                             Talk to Bot
