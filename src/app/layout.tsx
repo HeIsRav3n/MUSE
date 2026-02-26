@@ -39,6 +39,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                         <p className="text-[10px] text-sonara-text-dim">
                                             Powered By{" "}
                                             <a
+                                                href="https://openaudio.org"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-sonara-accent hover:underline"
+                                            >
+                                                Open Audio Protocol
+                                            </a>
+                                            {" "}•{" "}
+                                            <a
                                                 href="https://audius.co"
                                                 target="_blank"
                                                 rel="noopener noreferrer"

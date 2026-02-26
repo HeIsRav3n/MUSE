@@ -1,6 +1,8 @@
 // Audius SDK helpers — REST API wrapper for client-side use
-// The @audius/sdk npm package has Node.js dependencies that break webpack
-// So we use the REST API directly but expose the same typed helpers
+// Built on the Open Audio Protocol (https://openaudio.org)
+// Uses the Audius REST API directly with typed helpers
+
+import type { AudiusArtwork } from '@/components/ui/AudiusImage';
 
 const API_BASE = 'https://api.audius.co/v1';
 const API_KEY = process.env.NEXT_PUBLIC_AUDIUS_API_KEY || '0xae4d3e296787e296b704511d724e7fac088ce029';
@@ -28,8 +30,8 @@ async function audiusFetch<T>(endpoint: string, params?: Record<string, string>)
 export interface SdkTrack {
     id: string;
     title: string;
-    user: { id: string; name: string; handle: string; profilePicture?: Record<string, string> };
-    artwork?: Record<string, string>;
+    user: { id: string; name: string; handle: string; profilePicture?: AudiusArtwork };
+    artwork?: AudiusArtwork;
     playCount: number;
     favoriteCount: number;
     repostCount: number;
@@ -43,8 +45,8 @@ export interface SdkUser {
     name: string;
     handle: string;
     bio?: string;
-    profilePicture?: Record<string, string>;
-    coverPhoto?: Record<string, string>;
+    profilePicture?: AudiusArtwork;
+    coverPhoto?: AudiusArtwork;
     followerCount: number;
     trackCount: number;
     isVerified: boolean;

@@ -4,6 +4,7 @@ import { Music, Play, Heart, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { sdkGetTrendingTracks, sdkStreamUrl, formatCount, formatDuration, type SdkTrack } from "@/lib/audiusSdk";
 import { useAudioStore, type QueueTrack } from "@/lib/audioStore";
+import { AudiusImage } from "@/components/ui/AudiusImage";
 
 export function TrendingTracks() {
     const [tracks, setTracks] = useState<SdkTrack[]>([]);
@@ -96,13 +97,7 @@ export function TrendingTracks() {
                             >
                                 <span className="text-[10px] font-mono text-sonara-text-muted w-4 flex-shrink-0">{i + 1}</span>
                                 <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
-                                    {track.artwork?.["150x150"] ? (
-                                        <img src={track.artwork["150x150"]} alt="" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-sonara-surface">
-                                            <Music className="w-4 h-4 text-sonara-text-muted" />
-                                        </div>
-                                    )}
+                                    <AudiusImage artwork={track.artwork} size="sm" alt={track.title} className="w-full h-full object-cover" />
                                     <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${isCurrentTrack && isPlaying ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                                         }`}>
                                         <Play className={`w-4 h-4 text-white fill-white ${isCurrentTrack && isPlaying ? "animate-pulse" : ""}`} />
