@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { 
-    getBot, 
-    sendMainMenu, 
-    sendTrendingTracks, 
-    sendNewReleases, 
+import {
+    getBot,
+    sendMainMenu,
+    sendTrendingTracks,
+    sendNewReleases,
     sendUserFavorites,
     sendPortfolio,
     sendSettings,
     sendHelp,
     sendTrackPreview,
-    getUserSession 
+    getUserSession
 } from '@/lib/telegramBot';
 
 // This route handles Webhook updates from Telegram (Production)
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
                 await bot?.sendMessage(chatId, '🎵 I\'m your SONARA music assistant! Use the menu below to explore music or type /help for commands.', {
                     reply_markup: {
                         inline_keyboard: [
-                            [{ text: "🚀 Open Mini App", web_app: { url: process.env.WEBAPP_URL || 'https://sonara-music.vercel.app' } }],
+                            [{ text: "🚀 Open Mini App", web_app: { url: process.env.WEBAPP_URL || 'https://sonara-2-0.vercel.app' } }],
                             [{ text: "❓ Help", callback_data: "help" }]
                         ]
                     }

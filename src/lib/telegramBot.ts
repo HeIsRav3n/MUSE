@@ -1,7 +1,7 @@
 import TelegramBot from 'node-telegram-bot-api';
 
 const token = process.env.TELEGRAM_BOT_TOKEN || '8468516167:AAHLPb_iE2TwOw0cXqjy93Q6EzSZD6M82vQ';
-const webAppUrl = process.env.WEBAPP_URL || 'https://sonara-music.vercel.app';
+const webAppUrl = process.env.WEBAPP_URL || 'https://sonara-2-0.vercel.app';
 
 // User session management
 interface UserSession {
