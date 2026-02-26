@@ -26,13 +26,15 @@ export function LayoutShell({ children }: { children: ReactNode }) {
         return () => window.removeEventListener("sidebar-toggle", handler);
     }, []);
 
-    const marginClass = sidebarCollapsed
-        ? "ml-[72px]"
-        : "ml-[72px] lg:ml-[260px]";
+    const paddingClass = sidebarCollapsed
+        ? "pl-[72px]"
+        : "pl-[72px] lg:pl-[260px]";
 
     return (
-        <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${marginClass}`}>
-            {children}
+        <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${paddingClass}`}>
+            <div className="flex-1 flex flex-col w-full max-w-[1600px] mx-auto relative z-10">
+                {children}
+            </div>
             {showGuide && <UserGuideModal onClose={() => setShowGuide(false)} />}
             <AIDJOverlay />
         </div>

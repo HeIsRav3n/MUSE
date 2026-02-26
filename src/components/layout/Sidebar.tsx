@@ -107,15 +107,7 @@ export function Sidebar() {
                         src="/sonara-logo.jpg"
                         alt="SONARA"
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                            // Fallback: show gradient S if image not found
-                            const target = e.currentTarget;
-                            target.style.display = "none";
-                            const fallback = target.nextElementSibling as HTMLElement;
-                            if (fallback) fallback.style.display = "flex";
-                        }}
                     />
-                    <span className="text-white font-bold text-lg hidden" style={{ display: "none" }}>S</span>
                 </div>
                 {!collapsed && (
                     <div className="hidden lg:block">

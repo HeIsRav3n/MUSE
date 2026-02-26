@@ -84,45 +84,42 @@ export function TrendingTracks() {
                     ))}
                 </div>
             ) : (
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                     {tracks.map((track, i) => {
                         const isCurrentTrack = currentTrack?.id === track.id;
                         return (
                             <button
                                 key={track.id}
                                 onClick={() => playTrack(track)}
-                                className={`w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all group cursor-pointer ${isCurrentTrack ? "bg-sonara-primary/10 ring-1 ring-sonara-primary/20" : ""
+                                className={`w-full flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-all group cursor-pointer ${isCurrentTrack ? "bg-sonara-primary/10 ring-1 ring-sonara-primary/20" : ""
                                     }`}
                             >
-                                <span className="text-xs font-mono text-sonara-text-muted w-5">{i + 1}</span>
-                                <div className="relative w-11 h-11 rounded-lg overflow-hidden bg-gradient-to-br from-sonara-primary/30 to-sonara-secondary/20 flex-shrink-0">
+                                <span className="text-[10px] font-mono text-sonara-text-muted w-4 flex-shrink-0">{i + 1}</span>
+                                <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
                                     {track.artwork?.["150x150"] ? (
-                                        <img src={track.artwork["150x150"]} alt={track.title} className="w-full h-full object-cover" />
+                                        <img src={track.artwork["150x150"]} alt="" className="w-full h-full object-cover" />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <Music className="w-5 h-5 text-sonara-primary/50" />
+                                        <div className="w-full h-full flex items-center justify-center bg-sonara-surface">
+                                            <Music className="w-4 h-4 text-sonara-text-muted" />
                                         </div>
                                     )}
                                     <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${isCurrentTrack && isPlaying ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                                         }`}>
-                                        <Play className={`w-4 h-4 text-white ${isCurrentTrack && isPlaying ? "animate-pulse" : ""}`} />
+                                        <Play className={`w-4 h-4 text-white fill-white ${isCurrentTrack && isPlaying ? "animate-pulse" : ""}`} />
                                     </div>
                                 </div>
                                 <div className="flex-1 min-w-0 text-left">
-                                    <p className={`text-sm font-medium truncate ${isCurrentTrack ? "text-sonara-primary-light" : "text-sonara-text"}`}>
+                                    <p className={`text-sm font-semibold truncate ${isCurrentTrack ? "text-sonara-primary-light" : "text-sonara-text"}`}>
                                         {track.title}
                                     </p>
-                                    <p className="text-xs text-sonara-text-muted truncate">{track.user?.name}</p>
+                                    <p className="text-[11px] text-sonara-text-muted truncate">{track.user?.name}</p>
                                 </div>
-                                <div className="hidden sm:flex items-center gap-3 text-xs text-sonara-text-muted">
+                                <div className="hidden lg:flex items-center gap-4 text-[10px] text-sonara-text-muted font-mono">
                                     <span className="flex items-center gap-1">
-                                        <Play className="w-3 h-3" /> {formatCount(track.playCount)}
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                        <Heart className="w-3 h-3" /> {formatCount(track.favoriteCount)}
+                                        <Play className="w-2.5 h-2.5" /> {formatCount(track.playCount)}
                                     </span>
                                 </div>
-                                <span className="text-xs font-mono text-sonara-text-muted">{formatDuration(track.duration)}</span>
+                                <span className="text-[10px] font-mono text-sonara-text-muted w-10 text-right">{formatDuration(track.duration)}</span>
                             </button>
                         );
                     })}

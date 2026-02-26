@@ -45,22 +45,22 @@ const stats = [
 
 export function StatsBar() {
     return (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
             {stats.map((stat) => (
                 <div
                     key={stat.label}
-                    className="stat-card group"
+                    className="stat-card group animate-slide-up"
                 >
-                    <div className="flex items-start justify-between mb-3">
-                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.bg} flex items-center justify-center`}>
-                            <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                    <div className="flex items-start justify-between mb-2">
+                        <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${stat.bg} flex items-center justify-center`}>
+                            <stat.icon className={`w-4 h-4 ${stat.color}`} />
                         </div>
-                        <span className={`text-xs font-mono font-semibold ${stat.positive ? "text-sonara-success" : "text-sonara-danger"}`}>
+                        <span className={`text-[10px] font-mono font-semibold ${stat.positive ? "text-sonara-success" : "text-sonara-danger"}`}>
                             {stat.change}
                         </span>
                     </div>
-                    <p className="text-2xl font-bold font-display text-sonara-text">{stat.value}</p>
-                    <p className="text-xs text-sonara-text-muted mt-1">{stat.label}</p>
+                    <p className="text-xl lg:text-2xl font-bold font-display text-sonara-text">{stat.value}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-sonara-text-muted mt-1">{stat.label}</p>
                 </div>
             ))}
         </div>

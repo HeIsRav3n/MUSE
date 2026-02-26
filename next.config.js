@@ -2,10 +2,8 @@
 const nextConfig = {
   // Performance optimizations
   reactStrictMode: true,
-  compiler: {
-    swcMinify: true,
-  },
-  
+  // SWC minification is enabled by default in Next.js 13+
+
   // Security headers
   async headers() {
     return [
@@ -26,13 +24,13 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; media-src 'self' https:;"
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://telegram.org https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; media-src 'self' https:;"
           }
         ]
       }
     ];
   },
-  
+
   // Image optimization
   images: {
     remotePatterns: [
@@ -67,7 +65,7 @@ const nextConfig = {
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: false,
   },
-  
+
   // Webpack optimizations
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
@@ -90,7 +88,7 @@ const nextConfig = {
         },
       };
     }
-    
+
     // Optimize bundle size
     config.resolve.fallback = {
       ...config.resolve.fallback,
@@ -119,27 +117,24 @@ const nextConfig = {
       dgram: false,
       dns: false,
     };
-    
+
     return config;
   },
-  
+
   // Experimental features
-  experimental: {
-    optimizeCss: true,
-    scrollRestoration: true,
-  },
-  
+  experimental: {},
+
   // Environment variables
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
-  
+
   // Disable source maps in production for better performance
   productionBrowserSourceMaps: false,
-  
+
   // Compress static assets
   compress: true,
-  
+
   // Enable static optimization
   staticPageGenerationTimeout: 60,
 

@@ -31,13 +31,13 @@ export function TopBar() {
     };
 
     return (
-        <header className="sticky top-0 z-40 h-[72px] glass-strong border-b border-sonara-border/50 flex items-center justify-between px-4 lg:px-6 gap-4">
+        <header className="sticky top-0 z-40 h-[72px] glass-strong border-b border-white/[0.08] flex items-center justify-between px-4 lg:px-6 gap-4 w-full">
             {/* Search */}
-            <div className={`relative flex-1 max-w-md transition-all duration-300 ${searchFocused ? 'max-w-lg' : ''}`}>
+            <div className={`relative flex-1 max-w-md transition-all duration-300 ${searchFocused ? 'max-w-lg' : 'max-w-[160px] sm:max-w-md'}`}>
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sonara-text-muted" />
                 <input
                     type="text"
-                    placeholder="Search artists, tracks, coins..."
+                    placeholder="Search artists..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={handleKeyDown}

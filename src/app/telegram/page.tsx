@@ -7,30 +7,56 @@ import { Music, TrendingUp, Star, Wallet, Settings, ExternalLink } from "lucide-
 export default function TelegramMiniApp() {
     const [isTelegram, setIsTelegram] = useState(false);
     const [tg, setTg] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
-        // Check if we're in Telegram WebApp
-        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+        // Enhanced Telegram WebApp detection
+        const checkTelegramEnvironment = () => {
+            if (typeof window === 'undefined') return false;
+            
+            const webApp = window.Telegram?.WebApp;
+            if (!webApp) return false;
+            
+            // Check if we have initData (indicates we're inside Telegram)
+            const hasInitData = !!webApp.initData || !!webApp.initDataUnsafe;
+            const hasPlatform = !!webApp.platform;
+            
+            return hasInitData || hasPlatform;
+        };
+
+        if (checkTelegramEnvironment()) {
             setIsTelegram(true);
-            const webApp = window.Telegram.WebApp;
+            const webApp = window.Telegram!.WebApp;
             setTg(webApp);
 
-            // Initialize Telegram WebApp
-            webApp.ready();
-            webApp.expand();
-            webApp.enableClosingConfirmation();
+            // Initialize Telegram WebApp with error handling
+            try {
+                webApp.ready();
+                webApp.expand();
+                webApp.enableClosingConfirmation();
 
-            // Set theme colors
-            document.documentElement.style.setProperty('--tg-theme-bg-color', webApp.backgroundColor);
-            document.documentElement.style.setProperty('--tg-theme-text-color', webApp.textColor);
-            document.documentElement.style.setProperty('--tg-theme-button-color', webApp.buttonColor);
-            document.documentElement.style.setProperty('--tg-theme-button-text-color', webApp.buttonTextColor);
+                // Set theme colors
+                document.documentElement.style.setProperty('--tg-theme-bg-color', webApp.backgroundColor);
+                document.documentElement.style.setProperty('--tg-theme-text-color', webApp.textColor);
+                document.documentElement.style.setProperty('--tg-theme-button-color', webApp.buttonColor);
+                document.documentElement.style.setProperty('--tg-theme-button-text-color', webApp.buttonTextColor);
 
-            // Set background color
-            document.body.style.backgroundColor = webApp.backgroundColor;
+                // Set background color
+                document.body.style.backgroundColor = webApp.backgroundColor;
+                
+                console.log('Telegram WebApp initialized:', {
+                    platform: webApp.platform,
+                    version: webApp.version,
+                    themeParams: webApp.initDataUnsafe?.theme_params
+                });
+            } catch (error) {
+                console.error('Failed to initialize Telegram WebApp:', error);
+            }
         }
-    }, []);
+        
+        setIsLoading(false);
+    }, []); // Empty dependency array
 
     const navigateTo = (path: string) => {
         if (isTelegram && tg) {
