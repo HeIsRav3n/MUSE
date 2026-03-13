@@ -9,7 +9,6 @@ export enum ErrorCategory {
     VALIDATION = 'VALIDATION',
     SYSTEM = 'SYSTEM',
     UI = 'UI',
-    TELEGRAM = 'TELEGRAM',
     WIDGET = 'WIDGET'
 }
 
@@ -193,12 +192,6 @@ class ErrorHandler {
                 [ErrorSeverity.HIGH]: 'UI failure. Interface may not work properly',
                 [ErrorSeverity.CRITICAL]: 'Critical UI failure'
             },
-            [ErrorCategory.TELEGRAM]: {
-                [ErrorSeverity.LOW]: 'Telegram integration issue',
-                [ErrorSeverity.MEDIUM]: 'Telegram bot error',
-                [ErrorSeverity.HIGH]: 'Telegram service unavailable',
-                [ErrorSeverity.CRITICAL]: 'Critical Telegram failure'
-            },
             [ErrorCategory.WIDGET]: {
                 [ErrorSeverity.LOW]: 'Widget issue detected',
                 [ErrorSeverity.MEDIUM]: 'Widget error',
@@ -293,16 +286,6 @@ class ErrorHandler {
         });
     }
 
-    handleTelegramError(message: string, originalError?: Error | unknown, context?: Record<string, any>): AppError {
-        return this.handleError({
-            message,
-            category: ErrorCategory.TELEGRAM,
-            severity: ErrorSeverity.LOW,
-            originalError,
-            context
-        });
-    }
-
     handleWidgetError(message: string, originalError?: Error | unknown, context?: Record<string, any>): AppError {
         return this.handleError({
             message,
@@ -323,7 +306,5 @@ export const handleAudioError = (message: string, originalError?: Error | unknow
     errorHandler.handleAudioError(message, originalError, context);
 export const handleNetworkError = (message: string, originalError?: Error | unknown, context?: Record<string, any>) => 
     errorHandler.handleNetworkError(message, originalError, context);
-export const handleTelegramError = (message: string, originalError?: Error | unknown, context?: Record<string, any>) => 
-    errorHandler.handleTelegramError(message, originalError, context);
 export const handleWidgetError = (message: string, originalError?: Error | unknown, context?: Record<string, any>) => 
     errorHandler.handleWidgetError(message, originalError, context);

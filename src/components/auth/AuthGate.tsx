@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Music, Headphones, TrendingUp, Wallet, Compass, Users, Mic2, Heart, ScanSearch } from "lucide-react";
 
 // Routes that don't require authentication
-const PUBLIC_ROUTES = ["/telegram"];
+const PUBLIC_ROUTES = [] as string[];
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
     const { isLoggedIn, isInitialized, login } = useAudiusAuth();

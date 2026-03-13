@@ -57,6 +57,15 @@ export interface AudiusUser {
     is_verified: boolean;
 }
 
+export interface AudiusPlaylist {
+    id: string;
+    playlist_name: string;
+    description: string | null;
+    artwork: { '150x150'?: string; '480x480'?: string; '1000x1000'?: string } | null;
+    tracks: AudiusTrack[];
+    user: AudiusUser;
+}
+
 export async function getTrendingTracks(limit = 10): Promise<AudiusTrack[]> {
     const data = await audiusFetch<AudiusTrack[]>({ endpoint: '/tracks/trending', params: { limit: String(limit) } });
     return data ?? [];

@@ -5,7 +5,6 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
 import { MusicPlayer } from "@/components/player/MusicPlayer";
 import { Providers } from "@/components/Providers";
-// import { TelegramProvider } from "@/components/TelegramProvider";
 import { LayoutShell } from "@/components/layout/LayoutShell";
 import { SolanaWalletProvider } from "@/components/SolanaWalletProvider";
 
@@ -35,28 +34,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en" className="theme-dark" suppressHydrationWarning>
             <body className={`${inter.className} ${outfit.variable} antialiased selection:bg-muse-primary/30 selection:text-muse-primary-light`}>
-                {/* <TelegramProvider> */}
-                    <SolanaWalletProvider>
-                        <Providers>
-                            <div className="bg-orb bg-orb-1" />
-                            <div className="bg-orb bg-orb-2" />
-                            <div className="bg-orb bg-orb-3" />
+                <SolanaWalletProvider>
+                    <Providers>
+                        <div className="bg-orb bg-orb-1" />
+                        <div className="bg-orb bg-orb-2" />
+                        <div className="bg-orb bg-orb-3" />
 
-                            <div className="relative z-10 flex min-h-screen">
-                                <Sidebar />
-                                <div className="flex-1 flex flex-col min-h-screen">
-                                    <TopBar />
-                                    <LayoutShell>
-                                        <main className="flex-1 p-4 lg:p-6 pb-28">
-                                            {children}
-                                        </main>
-                                    </LayoutShell>
-                                </div>
-                                <MusicPlayer />
+                        <div className="relative z-10 flex min-h-screen">
+                            <Sidebar />
+                            <div className="flex-1 flex flex-col min-h-screen">
+                                <TopBar />
+                                <LayoutShell>
+                                    <main className="flex-1 p-4 lg:p-6 pb-28">
+                                        {children}
+                                    </main>
+                                </LayoutShell>
                             </div>
-                        </Providers>
-                    </SolanaWalletProvider>
-                {/* </TelegramProvider> */}
+                            <MusicPlayer />
+                        </div>
+                    </Providers>
+                </SolanaWalletProvider>
             </body>
         </html>
     );
