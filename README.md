@@ -1,8 +1,8 @@
-# 🎵 SONARA 2.0 - Web3 Music Investment & Discovery Platform
+# 🎵 MUSE - Web3 Music Investment & Discovery Platform
 
 > **Discover emerging artists, invest in music, and earn rewards in the decentralized music economy**
 
-![SONARA Banner](https://img.shields.io/badge/Built%20By-RAV3N-purple) ![Powered By Audius](https://img.shields.io/badge/Powered%20By-Audius-blue) ![Web3 Music](https://img.shields.io/badge/Web3-Music-green)
+![MUSE Banner](https://img.shields.io/badge/Built%20By-RAV3N-purple) ![Powered By Audius](https://img.shields.io/badge/Powered%20By-Audius-blue) ![Web3 Music](https://img.shields.io/badge/Web3-Music-green)
 
 ## ✨ Features
 
@@ -41,8 +41,8 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/HeIsRav3n/sonara-2.0.git
-   cd sonara-2.0
+   git clone https://github.com/HeIsRav3n/muse.git
+   cd muse
    ```
 
 2. **Install dependencies**
@@ -64,7 +64,7 @@
    WEBAPP_URL=https://your-deployment-url.vercel.app
    
    # Audius (optional)
-   NEXT_PUBLIC_AUDIUS_APP_NAME=SONARA
+   NEXT_PUBLIC_AUDIUS_APP_NAME=MUSE
    NEXT_PUBLIC_AUDIUS_ENDPOINT=https://discoveryprovider.audius.co
    ```
 
@@ -123,6 +123,28 @@ src/
    curl -F "url=https://your-domain.com/api/telegram" https://api.telegram.org/bot<YOUR_TOKEN>/setWebhook
    ```
 
+## Project MUSE
+
+MUSE is a next-generation decentralized music platform built for high-performance audio discovery and artist empowerment. 
+
+> [!NOTE]
+> **Status: MVP / Hackathon Readiness**
+> This application is currently optimized for performance and aesthetic excellence. Core features like the Audio Engine, AI-DJ, and Theme System are fully operational. Web3 wallet connections are currently simulated for demonstration purposes.
+
+
+## 🚀 Production Readiness
+The application has undergone a comprehensive 10-point readiness audit:
+
+1. **Code Review**: Static analysis and manual review completed.
+2. **Security**: Audit of environment variables and Web3 simulation status.
+3. **Automated Tests**: Unit tests implemented for core utilities using Vitest.
+4. **Performance**: Optimized via dynamic imports, image optimization, and bundle splitting.
+5. **UI/UX**: Themed for both Light (Elegant Crystal) and Dark modes.
+6. **Documentation**: Comprehensive README and inline documentation.
+7. **CI/CD**: GitHub Actions configured for automated linting and testing.
+8. **Monitoring**: Performance monitoring singleton (LCP/FID/CLS) active.
+9. **Deployment**: Vercel-ready configuration.
+
 ## 🎯 Usage
 
 ### As a Listener
@@ -139,7 +161,7 @@ src/
 5. Earn streaming royalties
 
 ### Telegram Features
-1. Start conversation with [@sonara_bot](https://t.me/sonara_bot)
+1. Start conversation with [@muse_music_bot](https://t.me/muse_music_bot)
 2. Use commands like `/trending`, `/new`, `/portfolio`
 3. Launch mini-app for full experience
 4. Receive notifications about your investments
@@ -197,9 +219,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Twitter**: [@sonara_music](https://twitter.com/sonara_music)
-- **Telegram**: [@sonara_support](https://t.me/sonara_support)
-- **Email**: support@sonara.music
+- **Twitter**: [@muse_music](https://twitter.com/muse_music)
+- **Telegram**: [@muse_support](https://t.me/muse_support)
+- **Email**: support@muse.music
 - **Discord**: Coming soon
 
 ## 🚨 Disclaimer
