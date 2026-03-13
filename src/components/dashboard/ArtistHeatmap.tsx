@@ -18,10 +18,10 @@ export function ArtistHeatmap() {
         <div className="glass rounded-2xl p-5 glass-hover">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    <Flame className="w-5 h-5 text-sonara-accent" />
-                    <h3 className="font-display font-semibold text-sonara-text">Emerging Artists Index</h3>
+                    <Flame className="w-5 h-5 text-muse-accent" />
+                    <h3 className="font-display font-semibold text-muse-text">Emerging Artists Index</h3>
                 </div>
-                <button className="text-xs text-sonara-primary hover:text-sonara-primary-light transition-colors">View All</button>
+                <button className="text-xs text-muse-primary hover:text-muse-primary-light transition-colors">View All</button>
             </div>
 
             <div className="space-y-2.5">
@@ -30,7 +30,7 @@ export function ArtistHeatmap() {
                         key={artist.name}
                         className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all group cursor-pointer"
                     >
-                        <span className="text-xs font-mono text-sonara-text-muted w-5">{i + 1}</span>
+                        <span className="text-xs font-mono text-muse-text-muted w-5">{i + 1}</span>
                         <div
                             className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold"
                             style={{ backgroundColor: `${artist.color}30`, color: artist.color }}
@@ -38,12 +38,12 @@ export function ArtistHeatmap() {
                             {artist.name[0]}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-sonara-text truncate">{artist.name}</p>
-                            <p className="text-xs text-sonara-text-muted">{artist.genre} · {artist.listeners}</p>
+                            <p className="text-sm font-medium text-muse-text truncate">{artist.name}</p>
+                            <p className="text-xs text-muse-text-muted">{artist.genre} · {artist.listeners}</p>
                         </div>
                         {/* Heat bar */}
                         <div className="hidden sm:flex items-center gap-2 w-24">
-                            <div className="flex-1 h-1.5 bg-sonara-border rounded-full overflow-hidden">
+                            <div className="flex-1 h-1.5 bg-muse-border rounded-full overflow-hidden">
                                 <div
                                     className="h-full rounded-full transition-all duration-500"
                                     style={{
@@ -54,7 +54,7 @@ export function ArtistHeatmap() {
                             </div>
                             <span className="text-xs font-mono" style={{ color: artist.color }}>{artist.heat}</span>
                         </div>
-                        <span className="text-xs font-mono text-sonara-success flex items-center gap-0.5">
+                        <span className="text-xs font-mono text-muse-success flex items-center gap-0.5">
                             {artist.change}
                             <ArrowUpRight className="w-3 h-3" />
                         </span>

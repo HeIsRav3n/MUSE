@@ -1,310 +1,184 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-    Compass, Search, TrendingUp,
-    Music, Users, Zap, Award, X, Play, Plus
-} from "lucide-react";
-import { mockScouts } from "@/lib/mockData";
-import { sdkSearchUsers, sdkGetTrendingTracks, sdkStreamUrl, type SdkUser, type SdkTrack } from "@/lib/audiusSdk";
-import { useAudioStore, type QueueTrack } from "@/lib/audioStore";
+import { useSearchParams } from 'next/navigation';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Play, Heart, Music2, Share2, MoreHorizontal, Search } from 'lucide-react';
+import { AudiusPlaylistResponse, AudiusTrack } from '@/types/audius';
+import { AudiusImage } from '@/components/ui/AudiusImage';
 
-type AudiusUser = SdkUser;
+import { Suspense } from 'react';
 
-const genres = ["All", "Electronic", "Hip Hop", "Pop", "R&B", "Lo-Fi", "Rock", "Indie"];
-const badgeColors: Record<string, string> = {
-    Diamond: "from-purple-400 to-cyan-400",
-    Gold: "from-yellow-400 to-orange-400",
-    Silver: "from-gray-300 to-gray-500",
-    Bronze: "from-orange-600 to-orange-800",
-};
+function DiscoverContent() {
+    const searchParams = useSearchParams();
+    const query = searchParams.get('search') || '';
+    
+    const [loading, setLoading] = useState(true);
+    const [tracks, setTracks] = useState<AudiusTrack[]>([]);
+    const [displayQuery, setDisplayQuery] = useState(query);
 
-export default function DiscoverPage() {
-    const { play, addToQueue } = useAudioStore();
-    const [query, setQuery] = useState("");
-    const [artists, setArtists] = useState<AudiusUser[]>([]);
-    const [trendingTracks, setTrendingTracks] = useState<SdkTrack[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [selectedGenre, setSelectedGenre] = useState("All");
-    const [showStakeModal, setShowStakeModal] = useState<string | null>(null);
-    const [stakeAmount, setStakeAmount] = useState("1000");
-
-    const searchArtists = async (q: string) => {
-        if (!q.trim()) return;
+    // Fetch Audius results
+    const fetchSearchResults = useCallback(async (currentQuery: string) => {
         setLoading(true);
         try {
-            const data = await sdkSearchUsers(q, 12);
-            setArtists(data);
-        } catch (e) {
-            console.error(e);
+            const playlistFetch = await fetch('https://api.audius.co/v1/playlists/dp2Vo4m', {
+                next: { revalidate: 3600 } // Enable Next.js fetch caching
+            });
+            if (!playlistFetch.ok) throw new Error('API Sync Failed');
+            
+            const data: AudiusPlaylistResponse = await playlistFetch.json();
+            
+            let filtered = data.data[0].tracks;
+            if (currentQuery.trim()) {
+                const lcQuery = currentQuery.toLowerCase();
+                filtered = filtered.filter(t => 
+                    t.title.toLowerCase().includes(lcQuery) || 
+                    t.user.name.toLowerCase().includes(lcQuery)
+                );
+            }
+            
+            setTracks(filtered);
+            setDisplayQuery(currentQuery);
+        } catch (err) {
+            console.error(err);
         } finally {
             setLoading(false);
         }
-    };
-
-    const fetchTrending = async () => {
-        try {
-            const data = await sdkGetTrendingTracks(8, selectedGenre);
-            setTrendingTracks(data);
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    useEffect(() => {
-        searchArtists("electronic");
-        fetchTrending();
     }, []);
 
     useEffect(() => {
-        fetchTrending();
-    }, [selectedGenre]);
+        // Debounce search effect
+        const handler = setTimeout(() => {
+            fetchSearchResults(query);
+        }, 300); // 300ms debounce
 
-    const handlePlayTrack = (track: SdkTrack) => {
-        const qt: QueueTrack = {
-            id: track.id,
-            title: track.title,
-            artist: track.user.name,
-            artwork: track.artwork?.["480x480"] || track.artwork?.["150x150"] || track.user.profilePicture?.["150x150"] || "",
-            audioUrl: sdkStreamUrl(track.id),
-            duration: track.duration,
-        };
-        play(qt);
-    };
+        return () => clearTimeout(handler);
+    }, [query, fetchSearchResults]);
 
     return (
-        <div className="space-y-8 animate-slide-up pb-20">
-            <div>
-                <h1 className="text-2xl lg:text-3xl font-display font-bold gradient-text">
-                    Explore & Discover
+        <div className="min-h-screen p-6 lg:p-10 max-w-7xl mx-auto">
+            <div className="mb-10 text-center animate-slide-up">
+                <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-muse-primary/20 to-muse-secondary/20 border border-white/5 mb-6 shadow-glow-pink">
+                    <Search className="w-8 h-8 text-muse-primary-light" />
+                </div>
+                <h1 className="text-4xl lg:text-6xl font-display font-black text-white drop-shadow-xl mb-4 tracking-tighter">
+                    Discover <span className="gradient-text font-cursive italic">Results</span>
                 </h1>
-                <p className="text-sm text-sonara-text-muted mt-1">
-                    Live trends from Audius, emerging talent, and scout rewards
-                </p>
+                {displayQuery ? (
+                    <p className="text-lg text-muse-text-muted">
+                        Showing results for <span className="text-white font-bold">"{displayQuery}"</span>
+                    </p>
+                ) : (
+                    <p className="text-lg text-muse-text-muted">
+                        Browse the trending MUSE collection.
+                    </p>
+                )}
             </div>
 
-            {/* Search & Filters */}
-            <div className="flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sonara-text-muted" />
-                    <input
-                        type="text"
-                        placeholder="Search artists on Audius..."
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && searchArtists(query)}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl bg-sonara-surface border border-sonara-border text-sm text-sonara-text placeholder:text-sonara-text-muted focus:outline-none focus:border-sonara-primary/50 transition-all"
-                    />
-                </div>
-                <button onClick={() => searchArtists(query)} className="btn-primary px-6">
-                    <Search className="w-4 h-4" /> Search
-                </button>
-            </div>
-
-            {/* Genre filters */}
-            <div className="flex gap-2 flex-wrap">
-                {genres.map((genre) => (
-                    <button
-                        key={genre}
-                        onClick={() => setSelectedGenre(genre)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${selectedGenre === genre
-                            ? "bg-sonara-primary text-white"
-                            : "bg-white/5 text-sonara-text-dim hover:bg-white/10 border border-sonara-border/50"
-                            }`}
+            <AnimatePresence mode="wait">
+                {loading ? (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        key="loading"
+                        className="flex flex-col items-center justify-center py-32"
                     >
-                        {genre}
-                    </button>
-                ))}
-            </div>
-
-            {/* Trending Tracks Section */}
-            <div>
-                <h3 className="text-sm font-semibold text-sonara-text-dim mb-4 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4" /> Trending Live ({selectedGenre})
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {trendingTracks.map((track) => (
-                        <div key={track.id} className="group glass rounded-xl overflow-hidden hover:bg-white/5 transition-all">
-                            <div className="relative aspect-square">
-                                <img
-                                    src={track.artwork?.["480x480"] || track.user.profilePicture?.["480x480"] || "/placeholder.png"}
-                                    alt={track.title}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                />
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                    <button
-                                        onClick={() => handlePlayTrack(track)}
-                                        className="w-10 h-10 rounded-full bg-sonara-primary flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg shadow-purple-500/20"
-                                    >
-                                        <Play className="w-5 h-5 fill-current ml-0.5" />
-                                    </button>
-                                </div>
-                                <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur text-[10px] items-center gap-1 text-white hidden group-hover:flex">
-                                    <Music className="w-3 h-3" /> {track.playCount > 1000 ? (track.playCount / 1000).toFixed(1) + 'k' : track.playCount}
-                                </div>
-                            </div>
-                            <div className="p-3">
-                                <h4 className="font-semibold text-sonara-text truncate" title={track.title}>{track.title}</h4>
-                                <p className="text-xs text-sonara-text-muted truncate">{track.user.name}</p>
-                            </div>
+                        <div className="relative w-24 h-24">
+                            <div className="absolute inset-0 border-4 border-muse-primary/10 rounded-full"></div>
+                            <div className="absolute inset-0 border-4 border-t-muse-primary rounded-full animate-spin"></div>
+                            <div className="absolute inset-4 border-2 border-muse-secondary/20 rounded-full"></div>
+                            <div className="absolute inset-4 border-2 border-b-muse-secondary rounded-full animate-spin-slow"></div>
                         </div>
-                    ))}
-                    {trendingTracks.length === 0 && (
-                        <div className="col-span-full py-10 text-center text-sonara-text-dim">
-                            Loading trending tracks...
+                        <p className="mt-8 text-muse-text-muted text-xs tracking-[0.3em] font-bold uppercase animate-pulse">
+                            Optimizing Sound Protocol...
+                        </p>
+                    </motion.div>
+                ) : tracks.length === 0 ? (
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        key="empty"
+                        className="glass-strong rounded-[3rem] p-16 text-center max-w-2xl mx-auto mt-10 border border-white/5"
+                    >
+                        <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Music2 className="w-10 h-10 text-muse-text-dim opacity-40" />
                         </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Artists Grid */}
-                <div className="lg:col-span-2">
-                    <h3 className="text-sm font-semibold text-sonara-text-dim mb-3 flex items-center gap-2">
-                        <Compass className="w-4 h-4" /> Discovered Artists
-                    </h3>
-                    {loading ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {Array.from({ length: 6 }).map((_, i) => (
-                                <div key={i} className="glass rounded-xl p-4">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className="w-14 h-14 rounded-xl bg-sonara-border/50 shimmer" />
-                                        <div className="flex-1">
-                                            <div className="h-4 w-24 bg-sonara-border/50 rounded shimmer mb-2" />
-                                            <div className="h-3 w-16 bg-sonara-border/50 rounded shimmer" />
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {artists.map((artist) => (
-                                <div
-                                    key={artist.id}
-                                    className="glass rounded-xl p-4 glass-hover cursor-pointer group"
-                                >
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className="w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-sonara-primary/30 to-sonara-secondary/20 flex-shrink-0">
-                                            {artist.profilePicture?.["150x150"] ? (
-                                                <img src={artist.profilePicture["150x150"]} alt={artist.name} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-xl font-bold gradient-text">
-                                                    {artist.name[0]}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-1.5">
-                                                <p className="text-sm font-semibold text-sonara-text truncate">{artist.name}</p>
-                                                {artist.isVerified && <Zap className="w-3.5 h-3.5 text-sonara-secondary flex-shrink-0" />}
-                                            </div>
-                                            <p className="text-xs text-sonara-text-muted">@{artist.handle}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4 mb-3 text-xs text-sonara-text-muted">
-                                        <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {artist.followerCount?.toLocaleString() || 0}</span>
-                                        <span className="flex items-center gap-1"><Music className="w-3 h-3" /> {artist.trackCount} tracks</span>
-                                    </div>
-                                    {/* Simulated growth metrics */}
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className="flex items-center gap-1">
-                                            <TrendingUp className="w-3 h-3 text-sonara-success" />
-                                            <span className="text-xs text-sonara-success font-mono">
-                                                +{(Math.random() * 200 + 50).toFixed(0)}%
-                                            </span>
-                                            <span className="text-[10px] text-sonara-text-muted">30d</span>
-                                        </div>
-                                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-sonara-primary/10 text-sonara-primary-light border border-sonara-primary/20">
-                                            Score: {(70 + Math.random() * 25).toFixed(0)}
-                                        </span>
-                                    </div>
-                                    <button
-                                        onClick={() => setShowStakeModal(artist.id)}
-                                        className="w-full btn-secondary text-xs py-2 justify-center"
-                                    >
-                                        <Zap className="w-3.5 h-3.5" /> Stake on Artist
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                {/* Scout Leaderboard */}
-                <div>
-                    <h3 className="text-sm font-semibold text-sonara-text-dim mb-3 flex items-center gap-2">
-                        <Award className="w-4 h-4" /> Scout Leaderboard
-                    </h3>
-                    <div className="glass rounded-2xl p-4 space-y-2">
-                        {mockScouts.map((scout) => (
-                            <div
-                                key={scout.rank}
-                                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all"
+                        <h2 className="text-3xl font-display font-bold text-white mb-3">Silent Echoes</h2>
+                        <p className="text-muse-text-muted leading-relaxed">We couldn't find any creators matching "{displayQuery}". Maybe try a broader search or explore the trending section?</p>
+                    </motion.div>
+                ) : (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        key="results"
+                        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                    >
+                        {tracks.map((track, idx) => (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: idx * 0.03 }}
+                                key={`${track.id}-${idx}`}
+                                className="glass rounded-[2rem] p-4 flex gap-5 hover:border-muse-primary/40 hover:bg-white/5 hover:translate-y-[-4px] transition-all group overflow-hidden relative cursor-pointer"
                             >
-                                <span className={`text-lg font-bold font-mono w-7 ${scout.rank <= 3 ? "gradient-text" : "text-sonara-text-muted"}`}>
-                                    #{scout.rank}
-                                </span>
-                                <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${badgeColors[scout.badge]} flex items-center justify-center text-white text-[10px] font-bold`}>
-                                    {scout.handle[0]}
+                                <div className="absolute inset-0 bg-gradient-to-br from-muse-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                
+                                <div className="w-28 h-28 rounded-2xl overflow-hidden relative flex-shrink-0 border border-white/10 shadow-lg">
+                                    <AudiusImage 
+                                        artwork={track.artwork} 
+                                        size="md"
+                                        alt={track.title}
+                                        className="w-full h-full"
+                                    />
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <div className="w-12 h-12 rounded-full bg-muse-primary flex items-center justify-center text-white scale-75 group-hover:scale-100 transition-transform duration-300 shadow-glow-pink">
+                                            <Play className="w-6 h-6 ml-1 fill-current" />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-sonara-text truncate">{scout.handle}</p>
-                                    <p className="text-[10px] text-sonara-text-muted">
-                                        {scout.discoveries} discoveries · {scout.accuracy}% accuracy
-                                    </p>
+    
+                                <div className="flex-1 min-w-0 flex flex-col justify-center relative z-10">
+                                    <h3 className="text-xl font-display font-bold text-white truncate mb-1 group-hover:text-muse-primary-light transition-colors">{track.title}</h3>
+                                    <p className="text-sm text-muse-text-dim truncate font-medium">{track.user.name}</p>
+                                    
+                                    <div className="flex items-center gap-5 mt-4">
+                                        <div className="flex items-center gap-1.5 text-[10px] text-muse-text-muted font-bold tracking-widest uppercase">
+                                            <Play className="w-3.5 h-3.5 text-muse-secondary" />
+                                            <span>{track.play_count.toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5 text-[10px] text-muse-text-muted font-bold tracking-widest uppercase">
+                                            <Heart className="w-3.5 h-3.5 text-muse-primary" />
+                                            <span>{track.repost_count.toLocaleString()}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-xs font-mono text-sonara-success">${(scout.totalEarned / 1000).toFixed(0)}K</p>
-                                    <p className="text-[10px] text-sonara-text-muted">{scout.badge}</p>
+                                
+                                <div className="flex flex-col justify-between items-end relative z-10 p-1">
+                                    <button className="p-2.5 rounded-2xl hover:bg-white/10 text-muse-text-muted hover:text-white transition group-hover:rotate-0 rotate-90 duration-300">
+                                        <MoreHorizontal className="w-5 h-5" />
+                                    </button>
+                                    <button className="p-2.5 rounded-2xl hover:bg-white/10 text-muse-text-muted hover:text-muse-primary-light transition">
+                                        <Share2 className="w-4.5 h-4.5" />
+                                    </button>
                                 </div>
-                            </div>
+                            </motion.div>
                         ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Stake Modal */}
-            {showStakeModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                    <div className="glass-strong rounded-2xl p-6 w-full max-w-md mx-4">
-                        <div className="flex items-center justify-between mb-5">
-                            <h3 className="text-lg font-display font-bold gradient-text">Stake on Artist</h3>
-                            <button onClick={() => setShowStakeModal(null)} className="p-1 rounded-lg hover:bg-white/5">
-                                <X className="w-5 h-5 text-sonara-text-muted" />
-                            </button>
-                        </div>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-xs text-sonara-text-muted mb-1 block">Stake Amount ($SOUND)</label>
-                                <input
-                                    type="number"
-                                    value={stakeAmount}
-                                    onChange={(e) => setStakeAmount(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl bg-sonara-surface border border-sonara-border text-sonara-text focus:outline-none focus:border-sonara-primary/50"
-                                />
-                            </div>
-                            <div className="glass rounded-xl p-3 space-y-2">
-                                <div className="flex justify-between text-xs">
-                                    <span className="text-sonara-text-muted">Discovery NFT</span>
-                                    <span className="text-sonara-text">Will be minted</span>
-                                </div>
-                                <div className="flex justify-between text-xs">
-                                    <span className="text-sonara-text-muted">Early Scout Bonus</span>
-                                    <span className="text-sonara-success">+5% revenue share</span>
-                                </div>
-                                <div className="flex justify-between text-xs">
-                                    <span className="text-sonara-text-muted">Lock Period</span>
-                                    <span className="text-sonara-text">30 days</span>
-                                </div>
-                            </div>
-                            <button className="w-full btn-primary py-3 justify-center text-base">
-                                <Zap className="w-5 h-5" /> Confirm Stake
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
+    );
+}
+
+export default function DiscoverSearch() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen p-6 lg:p-10 flex items-center justify-center">
+                <div className="w-12 h-12 border-4 border-muse-primary/10 border-t-muse-primary rounded-full animate-spin"></div>
+            </div>
+        }>
+            <DiscoverContent />
+        </Suspense>
     );
 }

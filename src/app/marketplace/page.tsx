@@ -5,15 +5,15 @@ import {
     Play, ShoppingCart,
     X, Check
 } from "lucide-react";
-import { mockStemListings } from "@/lib/mockData";
+import { stemListings } from "@/lib/liveData";
 import { useEconomyStore } from "@/lib/economyStore";
 
 const stemTypeColors: Record<string, string> = {
-    Vocals: "text-sonara-accent bg-sonara-accent/10 border-sonara-accent/20",
-    Drums: "text-sonara-warning bg-sonara-warning/10 border-sonara-warning/20",
-    Bass: "text-sonara-success bg-sonara-success/10 border-sonara-success/20",
-    Melody: "text-sonara-primary bg-sonara-primary/10 border-sonara-primary/20",
-    "Full Mix": "text-sonara-secondary bg-sonara-secondary/10 border-sonara-secondary/20",
+    Vocals: "text-muse-accent bg-muse-accent/10 border-muse-accent/20",
+    Drums: "text-muse-warning bg-muse-warning/10 border-muse-warning/20",
+    Bass: "text-muse-success bg-muse-success/10 border-muse-success/20",
+    Melody: "text-muse-primary bg-muse-primary/10 border-muse-primary/20",
+    "Full Mix": "text-muse-secondary bg-muse-secondary/10 border-muse-secondary/20",
 };
 
 const licenseIcons: Record<string, string> = {
@@ -28,10 +28,10 @@ export default function MarketplacePage() {
 
     const types = ["All", "Vocals", "Drums", "Bass", "Melody", "Full Mix"];
     const filtered = selectedType === "All"
-        ? mockStemListings
-        : mockStemListings.filter((s) => s.stemType === selectedType);
+        ? stemListings
+        : stemListings.filter((s) => s.stemType === selectedType);
 
-    const selectedStem = mockStemListings.find((s) => s.id === showPurchaseModal);
+    const selectedStem = stemListings.find((s) => s.id === showPurchaseModal);
 
     return (
         <div className="space-y-6 animate-slide-up">
@@ -39,7 +39,7 @@ export default function MarketplacePage() {
                 <h1 className="text-2xl lg:text-3xl font-display font-bold gradient-text">
                     Remix Marketplace
                 </h1>
-                <p className="text-sm text-sonara-text-muted mt-1">
+                <p className="text-sm text-muse-text-muted mt-1">
                     License stems, trade remix rights, and earn royalties from derivative works
                 </p>
             </div>
@@ -47,25 +47,25 @@ export default function MarketplacePage() {
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <div className="stat-card">
-                    <p className="text-xs text-sonara-text-muted">Listed Stems</p>
-                    <p className="text-xl font-bold font-display text-sonara-text mt-1">{mockStemListings.length}</p>
+                    <p className="text-xs text-muse-text-muted">Listed Stems</p>
+                    <p className="text-xl font-bold font-display text-muse-text mt-1">{stemListings.length}</p>
                 </div>
                 <div className="stat-card">
-                    <p className="text-xs text-sonara-text-muted">Total Purchases</p>
-                    <p className="text-xl font-bold font-display text-sonara-text mt-1">
-                        {mockStemListings.reduce((s, l) => s + l.purchases, 0)}
+                    <p className="text-xs text-muse-text-muted">Total Purchases</p>
+                    <p className="text-xl font-bold font-display text-muse-text mt-1">
+                        {stemListings.reduce((s, l) => s + l.purchases, 0)}
                     </p>
                 </div>
                 <div className="stat-card">
-                    <p className="text-xs text-sonara-text-muted">Avg. Royalty</p>
-                    <p className="text-xl font-bold font-display text-sonara-text mt-1">
-                        {(mockStemListings.reduce((s, l) => s + l.royaltyBPS, 0) / mockStemListings.length / 100).toFixed(1)}%
+                    <p className="text-xs text-muse-text-muted">Avg. Royalty</p>
+                    <p className="text-xl font-bold font-display text-muse-text mt-1">
+                        {(stemListings.reduce((s, l) => s + l.royaltyBPS, 0) / stemListings.length / 100).toFixed(1)}%
                     </p>
                 </div>
                 <div className="stat-card">
-                    <p className="text-xs text-sonara-text-muted">Price Range</p>
-                    <p className="text-xl font-bold font-display text-sonara-text mt-1">
-                        {Math.min(...mockStemListings.map((l) => l.price))} - {Math.max(...mockStemListings.map((l) => l.price))} ETH
+                    <p className="text-xs text-muse-text-muted">Price Range</p>
+                    <p className="text-xl font-bold font-display text-muse-text mt-1">
+                        {Math.min(...stemListings.map((l) => l.price))} - {Math.max(...stemListings.map((l) => l.price))} ETH
                     </p>
                 </div>
             </div>
@@ -77,8 +77,8 @@ export default function MarketplacePage() {
                         key={type}
                         onClick={() => setSelectedType(type)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${selectedType === type
-                            ? "bg-sonara-primary text-white"
-                            : "bg-white/5 text-sonara-text-dim hover:bg-white/10 border border-sonara-border/50"
+                            ? "bg-muse-primary text-white"
+                            : "bg-white/5 text-muse-text-dim hover:bg-white/10 border border-muse-border/50"
                             }`}
                     >
                         {type}
@@ -91,7 +91,7 @@ export default function MarketplacePage() {
                 {filtered.map((stem) => (
                     <div key={stem.id} className="glass rounded-2xl overflow-hidden glass-hover group cursor-pointer">
                         {/* Cover art */}
-                        <div className="h-40 bg-gradient-to-br from-sonara-primary/20 via-sonara-secondary/10 to-sonara-accent/15 relative">
+                        <div className="h-40 bg-gradient-to-br from-muse-primary/20 via-muse-secondary/10 to-muse-accent/15 relative">
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur flex items-center justify-center group-hover:bg-white/20 transition-all">
                                     <Play className="w-8 h-8 text-white/80" />
@@ -110,10 +110,10 @@ export default function MarketplacePage() {
                         </div>
 
                         <div className="p-4">
-                            <h4 className="text-sm font-semibold text-sonara-text mb-1 truncate">{stem.title}</h4>
-                            <p className="text-xs text-sonara-text-muted mb-3">by {stem.artistName}</p>
+                            <h4 className="text-sm font-semibold text-muse-text mb-1 truncate">{stem.title}</h4>
+                            <p className="text-xs text-muse-text-muted mb-3">by {stem.artistName}</p>
 
-                            <div className="flex items-center gap-3 mb-3 text-xs text-sonara-text-muted">
+                            <div className="flex items-center gap-3 mb-3 text-xs text-muse-text-muted">
                                 <span>{stem.bpm} BPM</span>
                                 <span>Key: {stem.key}</span>
                                 <span>{stem.genre}</span>
@@ -121,10 +121,10 @@ export default function MarketplacePage() {
 
                             <div className="flex items-center justify-between mb-3">
                                 <div>
-                                    <p className="text-lg font-bold font-mono text-sonara-text">{stem.price} ETH</p>
-                                    <p className="text-[10px] text-sonara-text-muted">{stem.royaltyBPS / 100}% royalties</p>
+                                    <p className="text-lg font-bold font-mono text-muse-text">{stem.price} ETH</p>
+                                    <p className="text-[10px] text-muse-text-muted">{stem.royaltyBPS / 100}% royalties</p>
                                 </div>
-                                <p className="text-xs text-sonara-text-muted">{stem.purchases} purchased</p>
+                                <p className="text-xs text-muse-text-muted">{stem.purchases} purchased</p>
                             </div>
 
                             <button
@@ -145,41 +145,41 @@ export default function MarketplacePage() {
                         <div className="flex items-center justify-between mb-5">
                             <h3 className="text-lg font-display font-bold gradient-text">Purchase License</h3>
                             <button onClick={() => setShowPurchaseModal(null)} className="p-1 rounded-lg hover:bg-white/5">
-                                <X className="w-5 h-5 text-sonara-text-muted" />
+                                <X className="w-5 h-5 text-muse-text-muted" />
                             </button>
                         </div>
                         <div className="space-y-4">
                             <div className="glass rounded-xl p-4">
-                                <p className="text-sm font-semibold text-sonara-text">{selectedStem.title}</p>
-                                <p className="text-xs text-sonara-text-muted">by {selectedStem.artistName}</p>
+                                <p className="text-sm font-semibold text-muse-text">{selectedStem.title}</p>
+                                <p className="text-xs text-muse-text-muted">by {selectedStem.artistName}</p>
                             </div>
                             <div className="glass rounded-xl p-3 space-y-2">
                                 <div className="flex justify-between text-xs">
-                                    <span className="text-sonara-text-muted">License Type</span>
-                                    <span className="text-sonara-text">{selectedStem.licenseType}</span>
+                                    <span className="text-muse-text-muted">License Type</span>
+                                    <span className="text-muse-text">{selectedStem.licenseType}</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
-                                    <span className="text-sonara-text-muted">Price</span>
-                                    <span className="text-sonara-text font-mono">{selectedStem.price} ETH</span>
+                                    <span className="text-muse-text-muted">Price</span>
+                                    <span className="text-muse-text font-mono">{selectedStem.price} ETH</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
-                                    <span className="text-sonara-text-muted">Ongoing Royalty</span>
-                                    <span className="text-sonara-primary-light">{selectedStem.royaltyBPS / 100}%</span>
+                                    <span className="text-muse-text-muted">Ongoing Royalty</span>
+                                    <span className="text-muse-primary-light">{selectedStem.royaltyBPS / 100}%</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
-                                    <span className="text-sonara-text-muted">Platform Fee</span>
-                                    <span className="text-sonara-text">2.5%</span>
+                                    <span className="text-muse-text-muted">Platform Fee</span>
+                                    <span className="text-muse-text">2.5%</span>
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-xs text-sonara-text-dim">
-                                    <Check className="w-3.5 h-3.5 text-sonara-success" /> Rights transferred as ERC-721 NFT
+                                <div className="flex items-center gap-2 text-xs text-muse-text-dim">
+                                    <Check className="w-3.5 h-3.5 text-muse-success" /> Rights transferred as ERC-721 NFT
                                 </div>
-                                <div className="flex items-center gap-2 text-xs text-sonara-text-dim">
-                                    <Check className="w-3.5 h-3.5 text-sonara-success" /> Automatic royalty distribution on-chain
+                                <div className="flex items-center gap-2 text-xs text-muse-text-dim">
+                                    <Check className="w-3.5 h-3.5 text-muse-success" /> Automatic royalty distribution on-chain
                                 </div>
-                                <div className="flex items-center gap-2 text-xs text-sonara-text-dim">
-                                    <Check className="w-3.5 h-3.5 text-sonara-success" /> Resellable on secondary market
+                                <div className="flex items-center gap-2 text-xs text-muse-text-dim">
+                                    <Check className="w-3.5 h-3.5 text-muse-success" /> Resellable on secondary market
                                 </div>
                             </div>
                             <button

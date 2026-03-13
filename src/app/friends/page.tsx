@@ -50,7 +50,7 @@ const mockRequests: FriendRequest[] = [
 
 const statusColors = {
     online: "bg-green-500",
-    listening: "bg-sonara-primary animate-pulse",
+    listening: "bg-muse-primary animate-pulse",
     offline: "bg-gray-500",
 };
 
@@ -72,7 +72,7 @@ export default function FriendsPage() {
     const declineRequest = (id: string) => setRequests((r) => r.filter((req) => req.id !== id));
 
     const copyLink = () => {
-        navigator.clipboard.writeText("https://sonara.xyz/invite/rav3n");
+        navigator.clipboard.writeText("https://muse.xyz/invite/rav3n");
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -83,23 +83,23 @@ export default function FriendsPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl lg:text-3xl font-display font-bold gradient-text">Friends</h1>
-                    <p className="text-sm text-sonara-text-muted mt-1">
+                    <p className="text-sm text-muse-text-muted mt-1">
                         {friends.filter((f) => f.status !== "offline").length} online •{" "}
                         {friends.filter((f) => f.status === "listening").length} listening now
                     </p>
                 </div>
                 <div className="flex gap-2">
                     <button onClick={() => setTab("search")} className="p-2.5 rounded-xl glass hover:bg-white/5 transition">
-                        <Search className="w-5 h-5 text-sonara-text-dim" />
+                        <Search className="w-5 h-5 text-muse-text-dim" />
                     </button>
                     <button onClick={() => setTab("share")} className="p-2.5 rounded-xl glass hover:bg-white/5 transition">
-                        <Share2 className="w-5 h-5 text-sonara-text-dim" />
+                        <Share2 className="w-5 h-5 text-muse-text-dim" />
                     </button>
                 </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-1 border-b border-sonara-border/50 pb-px">
+            <div className="flex gap-1 border-b border-muse-border/50 pb-px">
                 {[
                     { key: "list" as const, label: "Friends", icon: Users, count: friends.length },
                     { key: "requests" as const, label: "Requests", icon: UserPlus, count: requests.length },
@@ -108,14 +108,14 @@ export default function FriendsPage() {
                         key={t.key}
                         onClick={() => setTab(t.key)}
                         className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all border-b-2 -mb-px ${tab === t.key
-                                ? "border-sonara-primary text-sonara-primary"
-                                : "border-transparent text-sonara-text-muted hover:text-sonara-text"
+                                ? "border-muse-primary text-muse-primary"
+                                : "border-transparent text-muse-text-muted hover:text-muse-text"
                             }`}
                     >
                         <t.icon className="w-4 h-4" />
                         {t.label}
                         {t.count > 0 && (
-                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${tab === t.key ? "bg-sonara-primary/20 text-sonara-primary" : "bg-sonara-border text-sonara-text-muted"
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${tab === t.key ? "bg-muse-primary/20 text-muse-primary" : "bg-muse-border text-muse-text-muted"
                                 }`}>
                                 {t.count}
                             </span>
@@ -135,14 +135,14 @@ export default function FriendsPage() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search by Audius username or wallet address..."
                             autoFocus
-                            className="w-full bg-sonara-surface border border-sonara-border rounded-xl px-4 py-3 text-sm text-sonara-text placeholder:text-sonara-text-muted focus:outline-none focus:border-sonara-primary/50 transition-all"
+                            className="w-full bg-muse-surface border border-muse-border rounded-xl px-4 py-3 text-sm text-muse-text placeholder:text-muse-text-muted focus:outline-none focus:border-muse-primary/50 transition-all"
                         />
                         <div className="space-y-2">
                             {filteredFriends.map((f) => (
                                 <FriendCard key={f.id} friend={f} />
                             ))}
                             {filteredFriends.length === 0 && (
-                                <p className="text-center text-sonara-text-muted py-8 text-sm">No results found</p>
+                                <p className="text-center text-muse-text-muted py-8 text-sm">No results found</p>
                             )}
                         </div>
                     </div>
@@ -151,20 +151,20 @@ export default function FriendsPage() {
                 {/* Share / Invite */}
                 {tab === "share" && (
                     <div className="flex flex-col items-center py-8 gap-4">
-                        <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-sonara-primary/30 to-sonara-accent/30 flex items-center justify-center text-5xl">
+                        <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-muse-primary/30 to-muse-accent/30 flex items-center justify-center text-5xl">
                             🔗
                         </div>
-                        <h3 className="text-lg font-semibold text-sonara-text">Share Your Profile</h3>
-                        <p className="text-sm text-sonara-text-muted text-center max-w-xs">
-                            Invite friends to join Sonara and discover music together
+                        <h3 className="text-lg font-semibold text-muse-text">Share Your Profile</h3>
+                        <p className="text-sm text-muse-text-muted text-center max-w-xs">
+                            Invite friends to join MUSE and discover music together
                         </p>
                         <div className="flex items-center gap-2 w-full max-w-sm">
-                            <div className="flex-1 glass rounded-xl px-4 py-2.5 text-sm font-mono text-sonara-text-dim truncate">
-                                sonara.xyz/invite/rav3n
+                            <div className="flex-1 glass rounded-xl px-4 py-2.5 text-sm font-mono text-muse-text-dim truncate">
+                                muse.xyz/invite/rav3n
                             </div>
                             <button
                                 onClick={copyLink}
-                                className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${copied ? "bg-sonara-success/20 text-sonara-success" : "btn-primary"
+                                className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${copied ? "bg-muse-success/20 text-muse-success" : "btn-primary"
                                     }`}
                             >
                                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -186,29 +186,29 @@ export default function FriendsPage() {
                 {tab === "requests" && (
                     <div className="space-y-3">
                         {requests.length === 0 ? (
-                            <p className="text-center text-sonara-text-muted py-8 text-sm">No pending requests</p>
+                            <p className="text-center text-muse-text-muted py-8 text-sm">No pending requests</p>
                         ) : (
                             requests.map((r) => (
                                 <div key={r.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-all">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sonara-primary/30 to-sonara-secondary/30 flex items-center justify-center text-lg flex-shrink-0">
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-muse-primary/30 to-muse-secondary/30 flex items-center justify-center text-lg flex-shrink-0">
                                             {r.avatar}
                                         </div>
                                         <div>
-                                            <p className="text-sm font-medium text-sonara-text">{r.name}</p>
-                                            <p className="text-[10px] text-sonara-text-muted">{r.message} • {r.time}</p>
+                                            <p className="text-sm font-medium text-muse-text">{r.name}</p>
+                                            <p className="text-[10px] text-muse-text-muted">{r.message} • {r.time}</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
                                         <button
                                             onClick={() => acceptRequest(r.id)}
-                                            className="p-2 rounded-lg bg-sonara-success/20 hover:bg-sonara-success/30 text-sonara-success transition"
+                                            className="p-2 rounded-lg bg-muse-success/20 hover:bg-muse-success/30 text-muse-success transition"
                                         >
                                             <Check className="w-4 h-4" />
                                         </button>
                                         <button
                                             onClick={() => declineRequest(r.id)}
-                                            className="p-2 rounded-lg bg-sonara-danger/20 hover:bg-sonara-danger/30 text-sonara-danger transition"
+                                            className="p-2 rounded-lg bg-muse-danger/20 hover:bg-muse-danger/30 text-muse-danger transition"
                                         >
                                             <X className="w-4 h-4" />
                                         </button>
@@ -228,28 +228,28 @@ function FriendCard({ friend }: { friend: Friend }) {
         <div className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-all group">
             <div className="flex items-center gap-3">
                 <div className="relative">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sonara-primary/30 to-sonara-secondary/30 flex items-center justify-center text-lg flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-muse-primary/30 to-muse-secondary/30 flex items-center justify-center text-lg flex-shrink-0">
                         {friend.avatar}
                     </div>
-                    <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-sonara-card ${statusColors[friend.status]}`} />
+                    <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-muse-card ${statusColors[friend.status]}`} />
                 </div>
                 <div className="min-w-0">
-                    <p className="text-sm font-medium text-sonara-text">{friend.name}</p>
+                    <p className="text-sm font-medium text-muse-text">{friend.name}</p>
                     {friend.status === "listening" && friend.currentTrack ? (
-                        <p className="text-[10px] text-sonara-primary flex items-center gap-1 truncate">
+                        <p className="text-[10px] text-muse-primary flex items-center gap-1 truncate">
                             <Music className="w-3 h-3 flex-shrink-0" /> {friend.currentTrack}
                         </p>
                     ) : (
-                        <p className="text-[10px] text-sonara-text-muted">{friend.handle} • {friend.mutualFriends} mutual</p>
+                        <p className="text-[10px] text-muse-text-muted">{friend.handle} • {friend.mutualFriends} mutual</p>
                     )}
                 </div>
             </div>
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
                 <button className="p-2 rounded-lg hover:bg-white/10 transition">
-                    <MessageCircle className="w-4 h-4 text-sonara-text-dim" />
+                    <MessageCircle className="w-4 h-4 text-muse-text-dim" />
                 </button>
                 <button className="p-2 rounded-lg hover:bg-white/10 transition">
-                    <Music className="w-4 h-4 text-sonara-text-dim" />
+                    <Music className="w-4 h-4 text-muse-text-dim" />
                 </button>
             </div>
         </div>

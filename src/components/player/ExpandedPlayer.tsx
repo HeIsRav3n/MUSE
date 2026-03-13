@@ -5,7 +5,7 @@ import {
     Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1,
     Volume2, VolumeX, X, ChevronDown, Heart, ListMusic, Music2,
 } from "lucide-react";
-import { useAudioStore } from "@/lib/audioStore";
+import { useAudioData, useAudioPlayback } from "@/lib/audioStore";
 
 /* ─── Helpers ─── */
 function formatTime(s: number): string {
@@ -19,12 +19,14 @@ function formatTime(s: number): string {
    ═══════════════════════════════════════════════════════════════════ */
 export function ExpandedPlayer({ onClose }: { onClose: () => void }) {
     const {
-        currentTrack, isPlaying, setIsPlaying, volume, setVolume,
-        shuffleMode, repeatMode, toggleShuffle, setRepeatMode,
-        nextTrack, previousTrack, currentTime, duration,
-        setCurrentTime, queue,
-        audioRef, analyserRef,          // ← use shared refs from store
-    } = useAudioStore();
+        currentTrack, shuffleMode, repeatMode, toggleShuffle, setRepeatMode,
+        nextTrack, previousTrack, queue, audioRef, analyserRef,
+    } = useAudioData();
+
+    const {
+        isPlaying, setIsPlaying, volume, setVolume,
+        currentTime, duration, setCurrentTime,
+    } = useAudioPlayback();
 
     /* ─── Refs ─── */
     const containerRef = useRef<HTMLDivElement>(null);
@@ -115,6 +117,8 @@ export function ExpandedPlayer({ onClose }: { onClose: () => void }) {
         return () => { cancelAnimationFrame(bgAnimRef.current); window.removeEventListener("resize", resize); };
     }, [isPlaying]);
 
+    const [vizMode, setVizMode] = useState<"aura" | "vortex" | "dna">("aura");
+
     /* ─── Circular waveform — reads from shared analyserRef ─── */
     useEffect(() => {
         const canvas = vizCanvasRef.current;
@@ -122,7 +126,7 @@ export function ExpandedPlayer({ onClose }: { onClose: () => void }) {
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        const size = 320;
+        const size = 600;
         canvas.width = size;
         canvas.height = size;
 
@@ -135,71 +139,100 @@ export function ExpandedPlayer({ onClose }: { onClose: () => void }) {
             let dataArray: Uint8Array;
 
             if (analyser) {
-                // ★ REAL frequency data from the shared analyser
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                analyser.getByteFrequencyData(dataArray as any);
+                analyser.getByteFrequencyData(dataArray);
             } else {
-                // Simulated wave as fallback
-                dataArray = new Uint8Array(64);
-                const time = Date.now() / 1000;
-                for (let i = 0; i < 64; i++) {
-                    dataArray[i] = isPlaying
-                        ? Math.floor(80 + Math.sin(time * 3 + i * 0.3) * 50 + Math.sin(time * 7 + i * 0.7) * 30)
-                        : Math.floor(20 + Math.sin(time + i * 0.5) * 10);
+                dataArray = new Uint8Array(64).map((_, i) => Math.sin(Date.now()*0.01 + i)*50 + 100);
+            }
+
+            const time = Date.now() / 1000;
+            const avg = dataArray.reduce((p, c) => p + c, 0) / dataArray.length;
+            const intensity = avg / 128;
+
+            if (vizMode === "aura") {
+                const bars = 120;
+                const innerRadius = 140;
+                const maxBarLen = 80;
+
+                for (let i = 0; i < bars; i++) {
+                    const angle = (i / bars) * Math.PI * 2 - Math.PI / 2 + time * 0.1;
+                    const val = (dataArray[i % 64] || 0) / 255;
+                    const barLen = val * maxBarLen * (1 + intensity * 0.5);
+
+                    const x1 = cx + Math.cos(angle) * innerRadius;
+                    const y1 = cy + Math.sin(angle) * innerRadius;
+                    const x2 = cx + Math.cos(angle) * (innerRadius + barLen);
+                    const y2 = cy + Math.sin(angle) * (innerRadius + barLen);
+
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.strokeStyle = `hsla(${270 + i * 2}, 85%, 65%, ${0.4 + val * 0.6})`;
+                    ctx.lineWidth = 3;
+                    ctx.lineCap = "round";
+                    ctx.stroke();
+
+                    // Flares
+                    if (val > 0.8) {
+                        ctx.beginPath();
+                        ctx.moveTo(x2, y2);
+                        ctx.lineTo(x2 + Math.cos(angle)*20, y2 + Math.sin(angle)*20);
+                        ctx.strokeStyle = "white";
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            } 
+            else if (vizMode === "vortex") {
+                const count = 200;
+                for (let i = 0; i < count; i++) {
+                    const angle = (i / count) * Math.PI * 2 + time;
+                    const val = (dataArray[i % 64] / 255);
+                    const dist = (i % 20) * 15 + (1 - val) * 100;
+                    const x = cx + Math.cos(angle + dist * 0.01) * dist;
+                    const y = cy + Math.sin(angle + dist * 0.01) * dist;
+                    
+                    ctx.fillStyle = `hsla(${280 + val * 50}, 100%, 70%, ${val * 0.8})`;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 1 + val * 3, 0, Math.PI * 2);
+                    ctx.fill();
                 }
             }
+            else if (vizMode === "dna") {
+                const strands = 2;
+                const points = 40;
+                for (let s = 0; s < strands; s++) {
+                    ctx.beginPath();
+                    for (let i = 0; i < points; i++) {
+                        const y = (i / points) * 300 - 150;
+                        const val = dataArray[i] / 255;
+                        const angle = i * 0.4 + time * 2 + s * Math.PI;
+                        const x = Math.sin(angle) * (40 + val * 40);
+                        
+                        const px = cx + x;
+                        const py = cy + y;
+                        
+                        if (i === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
 
-            const bars = 64;
-            const innerRadius = 110;
-            const maxBarLen = 45;
-
-            for (let i = 0; i < bars; i++) {
-                const angle = (i / bars) * Math.PI * 2 - Math.PI / 2;
-                const val = (dataArray[i % dataArray.length] || 0) / 255;
-                const barLen = val * maxBarLen + 2;
-
-                const x1 = cx + Math.cos(angle) * innerRadius;
-                const y1 = cy + Math.sin(angle) * innerRadius;
-                const x2 = cx + Math.cos(angle) * (innerRadius + barLen);
-                const y2 = cy + Math.sin(angle) * (innerRadius + barLen);
-
-                const grad = ctx.createLinearGradient(x1, y1, x2, y2);
-                grad.addColorStop(0, `hsla(${270 + i * 1.5}, 85%, 65%, ${0.5 + val * 0.5})`);
-                grad.addColorStop(1, `hsla(${300 + i * 1.5}, 90%, 75%, ${0.2 + val * 0.6})`);
-
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.strokeStyle = grad;
-                ctx.lineWidth = 3;
-                ctx.lineCap = "round";
-                ctx.stroke();
-
-                // Mirror inward
-                const innerLen = val * maxBarLen * 0.3 + 1;
-                const xi = cx + Math.cos(angle) * (innerRadius - innerLen);
-                const yi = cy + Math.sin(angle) * (innerRadius - innerLen);
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(xi, yi);
-                ctx.strokeStyle = `hsla(${270 + i * 2}, 80%, 70%, ${0.15 + val * 0.2})`;
-                ctx.lineWidth = 2;
-                ctx.stroke();
+                        if (i % 4 === 0) {
+                            ctx.fillStyle = s === 0 ? "#e024c3" : "#6333ff";
+                            ctx.beginPath();
+                            ctx.arc(px, py, 3 + val * 5, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    }
+                    ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
             }
-
-            // Glow ring
-            ctx.beginPath();
-            ctx.arc(cx, cy, innerRadius, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(168, 85, 247, ${isPlaying ? 0.15 : 0.06})`;
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
 
             vizAnimRef.current = requestAnimationFrame(draw);
         };
         draw();
         return () => cancelAnimationFrame(vizAnimRef.current);
-    }, [isPlaying, analyserRef]);
+    }, [isPlaying, analyserRef, vizMode]);
 
     /* ─── Play / Pause — uses the SHARED audio element ─── */
     const togglePlay = () => {
@@ -257,63 +290,104 @@ export function ExpandedPlayer({ onClose }: { onClose: () => void }) {
 
             {/* Top controls */}
             <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 lg:p-6 z-10">
-                <button onClick={onClose} className="text-sonara-text-muted hover:text-white transition p-2 rounded-xl hover:bg-white/5">
+                <button onClick={onClose} className="text-muse-text-muted hover:text-white transition p-2 rounded-xl hover:bg-white/5">
                     <ChevronDown className="w-6 h-6" />
                 </button>
-                <p className="text-xs text-sonara-text-muted uppercase tracking-widest font-medium">Now Playing</p>
-                <button onClick={() => setShowQueue(!showQueue)} className={`p-2 rounded-xl transition ${showQueue ? "text-sonara-primary bg-white/5" : "text-sonara-text-muted hover:text-white hover:bg-white/5"}`}>
+                <p className="text-xs text-muse-text-muted uppercase tracking-widest font-medium">Now Playing</p>
+                <button onClick={() => setShowQueue(!showQueue)} className={`p-2 rounded-xl transition ${showQueue ? "text-muse-primary bg-white/5" : "text-muse-text-muted hover:text-white hover:bg-white/5"}`}>
                     <ListMusic className="w-5 h-5" />
                 </button>
             </div>
 
             {/* Main content */}
-            <div className="relative z-10 flex flex-col items-center gap-6 w-full max-w-lg px-6 mt-12">
-                {/* Album art with circular visualizer */}
-                <div className="relative w-[280px] h-[280px] lg:w-[320px] lg:h-[320px]">
+            <div className={`relative z-10 flex flex-col items-center gap-8 w-full max-w-lg px-6 mt-12 transition-all duration-300`}>
+                
+                {/* Album art with circular visualizer & 💓 Beat Sync */}
+                <div 
+                    className="relative w-[300px] h-[300px] lg:w-[360px] lg:h-[360px] flex items-center justify-center"
+                    style={{ perspective: '1200px' }}
+                >
                     <canvas ref={vizCanvasRef} className="absolute inset-0 w-full h-full" />
-                    <div className={`absolute inset-0 m-auto w-[180px] h-[180px] lg:w-[200px] lg:h-[200px] rounded-full overflow-hidden shadow-2xl shadow-purple-900/40 ${isPlaying ? "animate-[spin_20s_linear_infinite]" : ""}`}>
+                    
+                    {/* Floating 3D Artwork Frame */}
+                    <div 
+                        className={`relative w-[220px] h-[220px] lg:w-[260px] lg:h-[260px] rounded-2xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.8)] transition-all duration-75`}
+                        style={{ 
+                            transformOrigin: 'center center',
+                            transform: `rotateY(${Math.sin(currentTime * 0.5) * 10}deg) rotateX(${Math.cos(currentTime * 0.3) * 5}deg) scale(${1 + (vizAnimRef.current % 100 < 5 ? 0.05 : 0)})`,
+                            boxShadow: `0 30px 60px rgba(0,0,0,0.8), 0 0 ${20 + (Math.random() * 20)}px rgba(168, 85, 247, 0.4)`
+                        }}
+                    >
                         {currentTrack?.artwork ? (
                             <img src={currentTrack.artwork} alt="" className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-sonara-primary to-sonara-secondary flex items-center justify-center">
-                                <Music2 className="w-12 h-12 text-white/80" />
+                            <div className="w-full h-full bg-gradient-to-br from-muse-primary to-muse-secondary flex items-center justify-center">
+                                <Music2 className="w-16 h-16 text-white/50" />
                             </div>
                         )}
-                        <div className="absolute inset-0 m-auto w-6 h-6 rounded-full bg-[#0a0015] border-2 border-white/10" />
+                        
+                        {/* Shimmer overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
                     </div>
-                    <div className={`absolute inset-0 rounded-full border border-purple-500/10 ${isPlaying ? "animate-ping" : ""}`} style={{ animationDuration: "3s" }} />
+
+                    {/* Ambient Glow Ring */}
+                    <div 
+                        className={`absolute inset-0 rounded-full border border-muse-primary/20 opacity-30 ${isPlaying ? "animate-ping" : ""}`} 
+                        style={{ 
+                            animationDuration: `${0.8 + (Math.random() * 0.4)}s`,
+                            transform: `scale(${1.2 + (Math.random() * 0.1)})`
+                        }} 
+                    />
                 </div>
 
-                {/* Track info */}
-                <div className="text-center mt-2">
-                    <h2 className="text-xl lg:text-2xl font-display font-bold text-white truncate max-w-[400px]">
+                {/* Track info with subtle bounce */}
+                <div className="text-center mt-2 group cursor-default">
+                    <h2 className="text-2xl lg:text-3xl font-display font-bold text-white truncate max-w-[450px] drop-shadow-lg tracking-tight">
                         {currentTrack?.title || "No Track Selected"}
                     </h2>
-                    <p className="text-sm text-sonara-text-muted mt-1">{currentTrack?.artist || "—"}</p>
+                    <p className="text-sm font-medium text-muse-primary-light mt-2 uppercase tracking-[0.2em] opacity-80">
+                        {currentTrack?.artist || "—"}
+                    </p>
                 </div>
 
-                {/* Progress bar */}
+                {/* Progress bar with rhythm pulse */}
                 <div className="w-full max-w-md">
-                    <div className="relative h-1.5 bg-white/10 rounded-full cursor-pointer group" onClick={seek}>
+                    <div className="relative h-2 bg-white/5 rounded-full cursor-pointer group/seek" onClick={seek}>
                         <div
-                            className="h-full rounded-full bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500 relative transition-all"
-                            style={{ width: `${pct}%` }}
+                            className="h-full rounded-full bg-gradient-to-r from-muse-primary via-fuchsia-400 to-muse-primary-light relative transition-all"
+                            style={{ 
+                                width: `${pct}%`,
+                                boxShadow: isPlaying ? '0 0 15px rgba(224, 36, 195, 0.4)' : 'none'
+                            }}
                         >
-                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full opacity-0 group-hover:opacity-100 transition shadow-[0_0_12px_rgba(168,85,247,0.6)]" />
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full scale-0 group-hover/seek:scale-100 transition-transform shadow-[0_0_15px_#fff]" />
                         </div>
                     </div>
-                    <div className="flex justify-between mt-2">
-                        <span className="text-xs font-mono text-sonara-text-muted">{formatTime(currentTime)}</span>
-                        <span className="text-xs font-mono text-sonara-text-muted">{formatTime(duration)}</span>
+                    <div className="flex justify-between mt-3 font-mono text-[10px] text-muse-text-muted tracking-widest">
+                        <span>{formatTime(currentTime)}</span>
+                        <span>{formatTime(duration)}</span>
                     </div>
+                </div>
+
+                {/* Visualizer Mode Toggle */}
+                <div className="flex items-center gap-2 p-1 bg-white/5 rounded-full border border-white/10">
+                    {(["aura", "vortex", "dna"] as const).map((m) => (
+                        <button
+                            key={m}
+                            onClick={() => setVizMode(m)}
+                            className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-full transition-all ${vizMode === m ? "bg-muse-primary text-white shadow-glow-pink" : "text-muse-text-dim hover:text-white"}`}
+                        >
+                            {m}
+                        </button>
+                    ))}
                 </div>
 
                 {/* Controls */}
                 <div className="flex items-center gap-6 mt-2">
-                    <button onClick={toggleShuffle} className={`transition-all ${shuffleMode ? "text-sonara-primary drop-shadow-[0_0_6px_rgba(168,85,247,0.5)]" : "text-sonara-text-muted hover:text-white"}`} aria-label="Shuffle">
+                    <button onClick={toggleShuffle} className={`transition-all ${shuffleMode ? "text-muse-primary drop-shadow-[0_0_6px_rgba(168,85,247,0.5)]" : "text-muse-text-muted hover:text-white"}`} aria-label="Shuffle">
                         <Shuffle className="w-5 h-5" />
                     </button>
-                    <button onClick={previousTrack} disabled={!currentTrack} className="text-sonara-text-dim hover:text-white transition disabled:opacity-30" aria-label="Previous">
+                    <button onClick={previousTrack} disabled={!currentTrack} className="text-muse-text-dim hover:text-white transition disabled:opacity-30" aria-label="Previous">
                         <SkipBack className="w-6 h-6" />
                     </button>
                     <button
@@ -324,17 +398,17 @@ export function ExpandedPlayer({ onClose }: { onClose: () => void }) {
                     >
                         {isPlaying ? <Pause className="w-7 h-7 text-white" /> : <Play className="w-7 h-7 text-white ml-1" />}
                     </button>
-                    <button onClick={nextTrack} disabled={!currentTrack} className="text-sonara-text-dim hover:text-white transition disabled:opacity-30" aria-label="Next">
+                    <button onClick={nextTrack} disabled={!currentTrack} className="text-muse-text-dim hover:text-white transition disabled:opacity-30" aria-label="Next">
                         <SkipForward className="w-6 h-6" />
                     </button>
-                    <button onClick={cycleRepeat} className={`transition-all ${repeatMode !== "none" ? "text-sonara-primary drop-shadow-[0_0_6px_rgba(168,85,247,0.5)]" : "text-sonara-text-muted hover:text-white"}`} aria-label={`Repeat: ${repeatMode}`}>
+                    <button onClick={cycleRepeat} className={`transition-all ${repeatMode !== "none" ? "text-muse-primary drop-shadow-[0_0_6px_rgba(168,85,247,0.5)]" : "text-muse-text-muted hover:text-white"}`} aria-label={`Repeat: ${repeatMode}`}>
                         {repeatMode === "one" ? <Repeat1 className="w-5 h-5" /> : <Repeat className="w-5 h-5" />}
                     </button>
                 </div>
 
                 {/* Volume */}
                 <div className="flex items-center gap-3 mt-2">
-                    <button onClick={() => setMuted(!muted)} className="text-sonara-text-muted hover:text-white transition">
+                    <button onClick={() => setMuted(!muted)} className="text-muse-text-muted hover:text-white transition">
                         {muted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                     </button>
                     <input
@@ -348,7 +422,7 @@ export function ExpandedPlayer({ onClose }: { onClose: () => void }) {
 
                 {/* Like */}
                 <div className="flex items-center gap-4 mt-1">
-                    <button onClick={() => setLiked(!liked)} className={`transition-all ${liked ? "text-pink-500 drop-shadow-[0_0_8px_rgba(236,72,153,0.5)] scale-110" : "text-sonara-text-muted hover:text-pink-400"}`}>
+                    <button onClick={() => setLiked(!liked)} className={`transition-all ${liked ? "text-pink-500 drop-shadow-[0_0_8px_rgba(236,72,153,0.5)] scale-110" : "text-muse-text-muted hover:text-pink-400"}`}>
                         <Heart className={`w-5 h-5 ${liked ? "fill-current" : ""}`} />
                     </button>
                 </div>
@@ -359,13 +433,13 @@ export function ExpandedPlayer({ onClose }: { onClose: () => void }) {
                 <div className="absolute right-0 top-0 bottom-0 w-80 bg-black/60 backdrop-blur-xl border-l border-white/5 z-20 flex flex-col animate-slide-up">
                     <div className="flex items-center justify-between p-4 border-b border-white/5">
                         <h3 className="text-sm font-semibold text-white">Up Next</h3>
-                        <button onClick={() => setShowQueue(false)} className="text-sonara-text-muted hover:text-white transition">
+                        <button onClick={() => setShowQueue(false)} className="text-muse-text-muted hover:text-white transition">
                             <X className="w-4 h-4" />
                         </button>
                     </div>
                     <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
                         {queue.length === 0 ? (
-                            <p className="text-xs text-sonara-text-muted text-center py-8">Queue is empty</p>
+                            <p className="text-xs text-muse-text-muted text-center py-8">Queue is empty</p>
                         ) : (
                             queue.map((track, i) => (
                                 <div key={`${track.id}-${i}`} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition group">
@@ -378,7 +452,7 @@ export function ExpandedPlayer({ onClose }: { onClose: () => void }) {
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <p className="text-xs text-white truncate">{track.title}</p>
-                                        <p className="text-[10px] text-sonara-text-muted truncate">{track.artist}</p>
+                                        <p className="text-[10px] text-muse-text-muted truncate">{track.artist}</p>
                                     </div>
                                 </div>
                             ))

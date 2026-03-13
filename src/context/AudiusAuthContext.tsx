@@ -29,7 +29,7 @@ const AudiusAuthContext = createContext<AudiusAuthState>({
     logout: () => { },
 });
 
-const STORAGE_KEY = "sonara_audius_user";
+const STORAGE_KEY = "muse_audius_user";
 const API_KEY = process.env.NEXT_PUBLIC_AUDIUS_API_KEY || "0xae4d3e296787e296b704511d724e7fac088ce029";
 
 // Load SDK via CDN for OAuth only (avoids Node.js deps in webpack)
@@ -63,9 +63,11 @@ export function AudiusAuthProvider({ children }: { children: ReactNode }) {
     // Restore from localStorage on mount
     useEffect(() => {
         try {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                setUser(JSON.parse(stored));
+            if (typeof localStorage !== "undefined") {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    setUser(JSON.parse(stored));
+                }
             }
         } catch { }
         setIsInitialized(true);
@@ -95,7 +97,7 @@ export function AudiusAuthProvider({ children }: { children: ReactNode }) {
 
     const login = useCallback(() => {
         try {
-            const sdk = sdkRef[0] || getCDNSdk();
+            const sdk = sdkRef[0] || (typeof window !== "undefined" ? getCDNSdk() : null);
             sdk?.oauth?.login({ scope: "read" });
         } catch (e) {
             console.error("Audius login error:", e);
@@ -104,7 +106,9 @@ export function AudiusAuthProvider({ children }: { children: ReactNode }) {
 
     const logout = useCallback(() => {
         setUser(null);
-        localStorage.removeItem(STORAGE_KEY);
+        if (typeof localStorage !== "undefined") {
+            localStorage.removeItem(STORAGE_KEY);
+        }
     }, []);
 
     return (

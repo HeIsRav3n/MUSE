@@ -87,3 +87,6 @@ pids
 .yarn/install-state.gz
 .pnp.*
 .vercel
+
+.vercel
+.env*.local

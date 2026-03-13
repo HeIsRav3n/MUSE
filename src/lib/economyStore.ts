@@ -17,6 +17,7 @@ export interface EconomyState {
         bonds: Array<{ id: string; albumTitle: string; amount: number; date: number }>; // list of bond investments
     };
     transactions: Transaction[];
+    isPremium: boolean;
 
     // Actions
     addFunds: (amount: number, source: string) => void;
@@ -24,6 +25,7 @@ export interface EconomyState {
     sellCoin: (coinId: string, coinName: string, amount: number, value: number) => boolean;
     buyNFT: (nftId: string, nftName: string, cost: number) => boolean;
     investBond: (bondId: string, albumTitle: string, amount: number) => boolean;
+    setPremium: (v: boolean) => void;
     reset: () => void;
 }
 
@@ -37,6 +39,7 @@ export const useEconomyStore = create<EconomyState>()(
                 bonds: []
             },
             transactions: [],
+            isPremium: true, // Default to true for the "Go Live" Premium experience
 
             addFunds: (amount: number, source: string = 'Funds Added') => set((state) => ({
                 balance: state.balance + amount,
@@ -122,10 +125,12 @@ export const useEconomyStore = create<EconomyState>()(
                 return true;
             },
 
-            reset: () => set({ balance: 10000, portfolio: { coins: {}, nfts: [], bonds: [] }, transactions: [] })
+            setPremium: (v: boolean) => set({ isPremium: v }),
+
+            reset: () => set({ balance: 10000, portfolio: { coins: {}, nfts: [], bonds: [] }, transactions: [], isPremium: true })
         }),
         {
-            name: 'sonara-economy-store',
+            name: 'muse-economy-store',
         }
     )
 );

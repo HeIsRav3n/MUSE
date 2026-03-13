@@ -107,7 +107,7 @@ export function Dropdown({
             {mounted && isOpen && createPortal(
                 <div
                     ref={menuRef}
-                    className={`fixed z-[100] glass-strong rounded-xl border border-sonara-border/50 shadow-2xl py-1 animate-slide-up ${menuClassName}`}
+                    className={`fixed z-[100] glass-strong rounded-xl border border-muse-border/50 shadow-2xl py-1 animate-slide-up ${menuClassName}`}
                     style={{ top: coords.top, left: coords.left }}
                     onClick={closeOnClick ? () => setIsOpen(false) : undefined}
                     role="menu"
@@ -141,21 +141,21 @@ export function DropdownItem({ children, onClick, disabled = false, icon, classN
             className={`w-full px-3 py-2 flex items-center gap-2.5 text-left text-sm transition-colors hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed ${className}`}
             role="menuitem"
         >
-            {icon && <span className="w-4 h-4 text-sonara-text-dim flex-shrink-0">{icon}</span>}
-            <span className="flex-1 text-sonara-text">{children}</span>
+            {icon && <span className="w-4 h-4 text-muse-text-dim flex-shrink-0">{icon}</span>}
+            <span className="flex-1 text-muse-text">{children}</span>
         </button>
     );
 }
 
 /* ─── Dropdown Divider ─── */
 export function DropdownDivider() {
-    return <div className="my-1 border-t border-sonara-border/50" />;
+    return <div className="my-1 border-t border-muse-border/50" />;
 }
 
 /* ─── Dropdown Header ─── */
 export function DropdownHeader({ children }: { children: ReactNode }) {
     return (
-        <div className="px-3 py-1.5 text-[10px] font-semibold text-sonara-text-muted uppercase tracking-wider">
+        <div className="px-3 py-1.5 text-[10px] font-semibold text-muse-text-muted uppercase tracking-wider">
             {children}
         </div>
     );

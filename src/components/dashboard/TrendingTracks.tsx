@@ -3,13 +3,14 @@
 import { Music, Play, Heart, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { sdkGetTrendingTracks, sdkStreamUrl, formatCount, formatDuration, type SdkTrack } from "@/lib/audiusSdk";
-import { useAudioStore, type QueueTrack } from "@/lib/audioStore";
+import { useAudioData, useAudioPlayback, type QueueTrack } from "@/lib/audioStore";
 import { AudiusImage } from "@/components/ui/AudiusImage";
 
 export function TrendingTracks() {
     const [tracks, setTracks] = useState<SdkTrack[]>([]);
     const [loading, setLoading] = useState(true);
-    const { play, addToQueue, currentTrack, isPlaying } = useAudioStore();
+    const { play, addToQueue, currentTrack } = useAudioData();
+    const { isPlaying } = useAudioPlayback();
 
     useEffect(() => {
         const fetchTrending = async () => {
@@ -55,19 +56,19 @@ export function TrendingTracks() {
         <div className="glass rounded-2xl p-5 glass-hover">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-sonara-secondary" />
-                    <h3 className="font-display font-semibold text-sonara-text">Trending on Audius</h3>
+                    <TrendingUp className="w-5 h-5 text-muse-secondary" />
+                    <h3 className="font-display font-semibold text-muse-text">Trending on Audius</h3>
                 </div>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={queueAll}
-                        className="text-[10px] text-sonara-text-muted hover:text-sonara-primary transition px-2 py-1 rounded-lg hover:bg-white/5"
+                        className="text-[10px] text-muse-text-muted hover:text-muse-primary transition px-2 py-1 rounded-lg hover:bg-muse-primary/10"
                     >
                         Queue All
                     </button>
-                    <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-sonara-secondary/10">
-                        <Music className="w-3 h-3 text-sonara-secondary" />
-                        <span className="text-[10px] text-sonara-secondary font-semibold">LIVE</span>
+                    <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-muse-secondary/10">
+                        <Music className="w-3 h-3 text-muse-secondary" />
+                        <span className="text-[10px] text-muse-secondary font-semibold">LIVE</span>
                     </div>
                 </div>
             </div>
@@ -76,10 +77,10 @@ export function TrendingTracks() {
                 <div className="space-y-3">
                     {Array.from({ length: 6 }).map((_, i) => (
                         <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl">
-                            <div className="w-12 h-12 rounded-lg bg-sonara-border/50 shimmer" />
+                            <div className="w-12 h-12 rounded-lg bg-muse-border/50 shimmer" />
                             <div className="flex-1">
-                                <div className="h-3 w-32 bg-sonara-border/50 rounded shimmer mb-2" />
-                                <div className="h-2 w-20 bg-sonara-border/50 rounded shimmer" />
+                                <div className="h-3 w-32 bg-muse-border/50 rounded shimmer mb-2" />
+                                <div className="h-2 w-20 bg-muse-border/50 rounded shimmer" />
                             </div>
                         </div>
                     ))}
@@ -92,29 +93,29 @@ export function TrendingTracks() {
                             <button
                                 key={track.id}
                                 onClick={() => playTrack(track)}
-                                className={`w-full flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-all group cursor-pointer ${isCurrentTrack ? "bg-sonara-primary/10 ring-1 ring-sonara-primary/20" : ""
+                                className={`w-full flex items-center gap-3 p-2 rounded-xl hover:bg-muse-primary/10 transition-all group cursor-pointer ${isCurrentTrack ? "bg-muse-primary/10 ring-1 ring-muse-primary/20" : ""
                                     }`}
                             >
-                                <span className="text-[10px] font-mono text-sonara-text-muted w-4 flex-shrink-0">{i + 1}</span>
+                                <span className="text-[10px] font-mono text-muse-text-muted w-4 flex-shrink-0">{i + 1}</span>
                                 <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
                                     <AudiusImage artwork={track.artwork} size="sm" alt={track.title} className="w-full h-full object-cover" />
-                                    <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${isCurrentTrack && isPlaying ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                                    <div className={`absolute inset-0 bg-muse-surface/40 backdrop-blur-[2px] flex items-center justify-center transition-opacity ${isCurrentTrack && isPlaying ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                                         }`}>
                                         <Play className={`w-4 h-4 text-white fill-white ${isCurrentTrack && isPlaying ? "animate-pulse" : ""}`} />
                                     </div>
                                 </div>
                                 <div className="flex-1 min-w-0 text-left">
-                                    <p className={`text-sm font-semibold truncate ${isCurrentTrack ? "text-sonara-primary-light" : "text-sonara-text"}`}>
+                                    <p className={`text-sm font-semibold truncate ${isCurrentTrack ? "text-muse-primary-light" : "text-muse-text"}`}>
                                         {track.title}
                                     </p>
-                                    <p className="text-[11px] text-sonara-text-muted truncate">{track.user?.name}</p>
+                                    <p className="text-[11px] text-muse-text-muted truncate">{track.user?.name}</p>
                                 </div>
-                                <div className="hidden lg:flex items-center gap-4 text-[10px] text-sonara-text-muted font-mono">
+                                <div className="hidden lg:flex items-center gap-4 text-[10px] text-muse-text-muted font-mono">
                                     <span className="flex items-center gap-1">
                                         <Play className="w-2.5 h-2.5" /> {formatCount(track.playCount)}
                                     </span>
                                 </div>
-                                <span className="text-[10px] font-mono text-sonara-text-muted w-10 text-right">{formatDuration(track.duration)}</span>
+                                <span className="text-[10px] font-mono text-muse-text-muted w-10 text-right">{formatDuration(track.duration)}</span>
                             </button>
                         );
                     })}

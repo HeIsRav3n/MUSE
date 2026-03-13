@@ -1,72 +1,62 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Inter, Outfit } from "next/font/google";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
 import { MusicPlayer } from "@/components/player/MusicPlayer";
 import { Providers } from "@/components/Providers";
-import { TelegramProvider } from "@/components/TelegramProvider";
+// import { TelegramProvider } from "@/components/TelegramProvider";
 import { LayoutShell } from "@/components/layout/LayoutShell";
+import { SolanaWalletProvider } from "@/components/SolanaWalletProvider";
+
+const inter = Inter({ subsets: ["latin"] });
+const outfit = Outfit({ 
+    subsets: ["latin"],
+    variable: "--font-outfit",
+});
+
+// Safe metadataBase generation for production build stability
+const getMetadataBase = () => {
+    const url = process.env.WEBAPP_URL || 'https://muse.vercel.app';
+    try {
+        return new URL(url);
+    } catch {
+        return new URL('https://muse.vercel.app');
+    }
+};
 
 export const metadata: Metadata = {
-    title: "SONARA — Web3 Music Investment & Discovery",
-    description: "Discover emerging artists, invest in music, and earn rewards in the decentralized music economy. Built By Rav3n • Powered By Audius.",
+    metadataBase: getMetadataBase(),
+    title: "MUSE — Women's History Month & Discovery",
+    description: "Discover emerging artists, invest in music, and earn rewards in the decentralized music economy. Built By Rav3n • Happy Women's History Month.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en" className="theme-dark" suppressHydrationWarning>
-            <body className="antialiased">
-                <TelegramProvider>
-                    <Providers>
-                        {/* Background orbs */}
-                        <div className="bg-orb bg-orb-1" />
-                        <div className="bg-orb bg-orb-2" />
-                        <div className="bg-orb bg-orb-3" />
+            <body className={`${inter.className} ${outfit.variable} antialiased selection:bg-muse-primary/30 selection:text-muse-primary-light`}>
+                {/* <TelegramProvider> */}
+                    <SolanaWalletProvider>
+                        <Providers>
+                            <div className="bg-orb bg-orb-1" />
+                            <div className="bg-orb bg-orb-2" />
+                            <div className="bg-orb bg-orb-3" />
 
-                        <div className="relative z-10 flex min-h-screen">
-                            <Sidebar />
-                            <LayoutShell>
-                                <TopBar />
-                                <main className="flex-1 p-4 lg:p-6 pb-28">{children}</main>
-
-                                {/* Footer */}
-                                <footer className="border-t border-sonara-border/30 py-6 px-4 lg:px-6 mb-20">
-                                    <div className="flex flex-col items-center justify-center gap-1">
-                                        <p className="text-xs text-sonara-text-muted">
-                                            Built By{" "}
-                                            <span className="font-semibold text-sonara-primary">Rav3n</span>
-                                        </p>
-                                        <p className="text-[10px] text-sonara-text-dim">
-                                            Powered By{" "}
-                                            <a
-                                                href="https://openaudio.org"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-sonara-accent hover:underline"
-                                            >
-                                                Open Audio Protocol
-                                            </a>
-                                            {" "}•{" "}
-                                            <a
-                                                href="https://audius.co"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-sonara-accent hover:underline"
-                                            >
-                                                Audius
-                                            </a>
-                                        </p>
-                                        <p className="text-[10px] text-sonara-border mt-2">
-                                            © {new Date().getFullYear()} Sonara. All rights reserved.
-                                        </p>
-                                    </div>
-                                </footer>
-                            </LayoutShell>
-                        </div>
-
-                        <MusicPlayer />
-                    </Providers>
-                </TelegramProvider>
+                            <div className="relative z-10 flex min-h-screen">
+                                <Sidebar />
+                                <div className="flex-1 flex flex-col min-h-screen">
+                                    <TopBar />
+                                    <LayoutShell>
+                                        <main className="flex-1 p-4 lg:p-6 pb-28">
+                                            {children}
+                                        </main>
+                                    </LayoutShell>
+                                </div>
+                                <MusicPlayer />
+                            </div>
+                        </Providers>
+                    </SolanaWalletProvider>
+                {/* </TelegramProvider> */}
             </body>
         </html>
     );

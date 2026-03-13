@@ -10,11 +10,11 @@ export function LayoutShell({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         // Read initial state from localStorage
-        const saved = localStorage.getItem("sonara-sidebar-collapsed");
+        const saved = localStorage.getItem("muse-sidebar-collapsed");
         if (saved === "true") setSidebarCollapsed(true);
 
         // Show guide on first visit
-        const guideSeen = localStorage.getItem("sonara_guide_seen");
+        const guideSeen = localStorage.getItem("muse_guide_seen");
         if (!guideSeen) setShowGuide(true);
 
         // Listen for sidebar toggle events

@@ -5,6 +5,7 @@ import {
     X, Sparkles, Music2, Headphones, BarChart3, Radio,
     Coins, Store, Users, ChevronRight, Rocket, Zap,
     Shield, Heart, ArrowRight, Star, Globe, Trophy, Check,
+    Mic2, Award,
 } from "lucide-react";
 
 interface GuideStep {
@@ -22,27 +23,27 @@ const guideSteps: GuideStep[] = [
         color: "from-purple-500 to-violet-600",
     },
     {
-        icon: <BarChart3 className="w-6 h-6" />,
-        title: "Scanner & Analytics",
-        description: "Real-time market analytics for music tokens. Track prices, volume, and sentiment across the Web3 music ecosystem.",
+        icon: <Users className="w-6 h-6" />,
+        title: "Women's Initiatives",
+        description: "Explore curated spaces for women in Web3. Discover podcasts, wellness audio, and empowering networks tailored for female creators.",
         color: "from-blue-500 to-cyan-500",
     },
     {
-        icon: <Coins className="w-6 h-6" />,
-        title: "Artist Coins & Bonds",
-        description: "Invest in your favorite artists through tokenized coins and album bonds. Earn as they grow — you're an early believer.",
+        icon: <Store className="w-6 h-6" />,
+        title: "Solana Web3 Integration",
+        description: "Connect your Phantom or Solflare wallet seamlessly. Experience high-speed, decentralized storage and wallet authentication natively.",
         color: "from-amber-500 to-orange-500",
     },
     {
-        icon: <Store className="w-6 h-6" />,
-        title: "NFT Marketplace",
-        description: "Collect rare music NFTs, limited drops, and exclusive releases. Own a piece of music history on-chain.",
+        icon: <Mic2 className="w-6 h-6" />,
+        title: "Her Story Podcasts",
+        description: "Dive deep into the journeys of influential women in Web3, music production, and decentralized technologies.",
         color: "from-pink-500 to-rose-500",
     },
     {
         icon: <Radio className="w-6 h-6" />,
-        title: "Party Rooms",
-        description: "Listen together in real-time party rooms. Vote on tracks, chat with fans, and vibe with the community.",
+        title: "Live Motivational Broadcasts",
+        description: "Get real-time inspiration through the Live Widget on your dashboard, streaming quotes and advice from top Women Web3 leaders.",
         color: "from-green-500 to-emerald-500",
     },
     {
@@ -52,15 +53,9 @@ const guideSteps: GuideStep[] = [
         color: "from-yellow-500 to-orange-500",
     },
     {
-        icon: <Radio className="w-6 h-6" />,
-        title: "Live Radio & Tipping",
-        description: "Tune into community-curated stations. Tip $SOUND to request tracks and support the DJs.",
-        color: "from-cyan-500 to-blue-500",
-    },
-    {
-        icon: <Trophy className="w-6 h-6" />,
-        title: "Discovery Bounties",
-        description: "Earn $SOUND by finding rare tracks and completing music discovery challenges.",
+        icon: <Heart className="w-6 h-6" />,
+        title: "Wellness Audio",
+        description: "Relax with exclusive meditation, sound baths, and wellness tracks curated for the ultimate serene experience.",
         color: "from-pink-500 to-rose-500",
     },
     {
@@ -74,7 +69,7 @@ const guideSteps: GuideStep[] = [
 const proTips = [
     { icon: <Zap className="w-4 h-4" />, tip: "Use keyboard shortcuts: Space for play/pause, ← → for skip" },
     { icon: <Shield className="w-4 h-4" />, tip: "Your data stays decentralized — powered by Audius" },
-    { icon: <Star className="w-4 h-4" />, tip: "Stake $SOUND tokens to unlock premium features and rewards" },
+    { icon: <Star className="w-4 h-4" />, tip: "Stake $AUDIO tokens to unlock premium features and rewards" },
     { icon: <Globe className="w-4 h-4" />, tip: "Switch visualizer modes in the player settings ⚙️" },
     { icon: <Zap className="w-4 h-4" />, tip: "Enable AI-DJ in settings for non-stop music" },
 ];
@@ -91,7 +86,7 @@ export function UserGuideModal({ onClose }: { onClose: () => void }) {
     const handleClose = () => {
         setVisible(false);
         if (dontShowAgain) {
-            localStorage.setItem("sonara_guide_seen", "true");
+            localStorage.setItem("muse_guide_seen", "true");
         }
         setTimeout(onClose, 300);
     };
@@ -109,7 +104,7 @@ export function UserGuideModal({ onClose }: { onClose: () => void }) {
                 {/* Glow effect */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/20 via-fuchsia-500/20 to-pink-500/20 rounded-3xl blur-xl" />
 
-                <div className="relative bg-sonara-card border border-white/10 rounded-2xl overflow-hidden">
+                <div className="relative bg-muse-card border border-white/10 rounded-2xl overflow-hidden">
                     {/* Header — gradient banner */}
                     <div className="relative h-32 bg-gradient-to-br from-purple-900/80 via-fuchsia-900/60 to-purple-900/40 overflow-hidden">
                         {/* Floating particles */}
@@ -135,8 +130,8 @@ export function UserGuideModal({ onClose }: { onClose: () => void }) {
                                     <Rocket className="w-6 h-6 text-white" />
                                     <Sparkles className="w-5 h-5 text-pink-300 animate-pulse" />
                                 </div>
-                                <h2 className="text-xl font-display font-bold text-white">Welcome to SONARA</h2>
-                                <p className="text-xs text-purple-200/80 mt-1">Your Gateway to Web3 Music</p>
+                                <h2 className="text-xl font-display font-bold text-white">Happy Women's History Month!</h2>
+                                <p className="text-xs text-purple-200/80 mt-1">Celebrating Women in Web3 Music</p>
                             </div>
                         </div>
 
@@ -155,12 +150,12 @@ export function UserGuideModal({ onClose }: { onClose: () => void }) {
                             <button
                                 key={i}
                                 onClick={() => setStep(i)}
-                                className={`h-1.5 rounded-full transition-all duration-300 ${step === i ? "w-6 bg-sonara-primary" : i < step ? "w-1.5 bg-sonara-primary/40" : "w-1.5 bg-white/15"}`}
+                                className={`h-1.5 rounded-full transition-all duration-300 ${step === i ? "w-6 bg-muse-primary" : i < step ? "w-1.5 bg-muse-primary/40" : "w-1.5 bg-white/15"}`}
                             />
                         ))}
                         <button
                             onClick={() => setStep(guideSteps.length)}
-                            className={`h-1.5 rounded-full transition-all duration-300 ${isLastStep ? "w-6 bg-sonara-primary" : "w-1.5 bg-white/15"}`}
+                            className={`h-1.5 rounded-full transition-all duration-300 ${isLastStep ? "w-6 bg-muse-primary" : "w-1.5 bg-white/15"}`}
                         />
                     </div>
 
@@ -174,12 +169,12 @@ export function UserGuideModal({ onClose }: { onClose: () => void }) {
                                 </div>
 
                                 <h3 className="text-lg font-bold text-white mb-2">{current.title}</h3>
-                                <p className="text-sm text-sonara-text-muted leading-relaxed max-w-sm">
+                                <p className="text-sm text-muse-text-muted leading-relaxed max-w-sm">
                                     {current.description}
                                 </p>
 
                                 {/* Step counter */}
-                                <p className="text-[10px] text-sonara-text-muted mt-4 uppercase tracking-widest">
+                                <p className="text-[10px] text-muse-text-muted mt-4 uppercase tracking-widest">
                                     {step + 1} of {guideSteps.length}
                                 </p>
                             </div>
@@ -193,10 +188,10 @@ export function UserGuideModal({ onClose }: { onClose: () => void }) {
                                 <div className="space-y-3">
                                     {proTips.map((tip, i) => (
                                         <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
-                                            <div className="w-8 h-8 rounded-lg bg-sonara-primary/20 flex items-center justify-center text-sonara-primary flex-shrink-0">
+                                            <div className="w-8 h-8 rounded-lg bg-muse-primary/20 flex items-center justify-center text-muse-primary flex-shrink-0">
                                                 {tip.icon}
                                             </div>
-                                            <p className="text-xs text-sonara-text-dim leading-relaxed pt-1">{tip.tip}</p>
+                                            <p className="text-xs text-muse-text-dim leading-relaxed pt-1">{tip.tip}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -210,11 +205,11 @@ export function UserGuideModal({ onClose }: { onClose: () => void }) {
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={() => setDontShowAgain(!dontShowAgain)}
-                                    className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${dontShowAgain ? "bg-sonara-primary border-sonara-primary" : "border-sonara-text-muted hover:border-sonara-text-dim"}`}
+                                    className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${dontShowAgain ? "bg-muse-primary border-muse-primary" : "border-muse-text-muted hover:border-muse-text-dim"}`}
                                 >
                                     {dontShowAgain && <Check className="w-3 h-3 text-white" />}
                                 </button>
-                                <label onClick={() => setDontShowAgain(!dontShowAgain)} className="text-xs text-sonara-text-muted cursor-pointer hover:text-sonara-text-dim select-none">
+                                <label onClick={() => setDontShowAgain(!dontShowAgain)} className="text-xs text-muse-text-muted cursor-pointer hover:text-muse-text-dim select-none">
                                     Do not show this again
                                 </label>
                             </div>
@@ -223,14 +218,14 @@ export function UserGuideModal({ onClose }: { onClose: () => void }) {
                                 {step > 0 ? (
                                     <button
                                         onClick={() => setStep(step - 1)}
-                                        className="text-xs text-sonara-text-muted hover:text-white transition px-3 py-2 rounded-lg hover:bg-white/5"
+                                        className="text-xs text-muse-text-muted hover:text-white transition px-3 py-2 rounded-lg hover:bg-white/5"
                                     >
                                         Back
                                     </button>
                                 ) : (
                                     <button
                                         onClick={handleClose}
-                                        className="text-xs text-sonara-text-muted hover:text-white transition px-3 py-2 rounded-lg hover:bg-white/5"
+                                        className="text-xs text-muse-text-muted hover:text-white transition px-3 py-2 rounded-lg hover:bg-white/5"
                                     >
                                         Skip
                                     </button>

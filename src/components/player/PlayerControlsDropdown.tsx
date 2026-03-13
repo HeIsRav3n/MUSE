@@ -2,7 +2,7 @@
 
 import { Repeat, Repeat1, Shuffle, Settings, Waves, Zap, Sparkles } from "lucide-react";
 import { Dropdown, DropdownItem, DropdownDivider, DropdownHeader } from "@/components/ui/Dropdown";
-import { useAudioStore } from "@/lib/audioStore";
+import { useAudioData, useAudioPlayback } from "@/lib/audioStore";
 import { useState, useEffect } from "react";
 
 const speedOptions = [
@@ -14,23 +14,26 @@ const speedOptions = [
     { label: "2×", value: 2 },
 ];
 
-export type VisualizerMode = "waveform" | "strings" | "alien" | "off";
+export type VisualizerMode = "waveform" | "strings" | "alien" | "cybergrid" | "prismrain" | "off";
 
 const vizOptions: { key: VisualizerMode; label: string; icon: React.ReactNode }[] = [
     { key: "waveform", label: "Waveform", icon: <Waves className="w-3.5 h-3.5" /> },
     { key: "strings", label: "Strings", icon: <Zap className="w-3.5 h-3.5" /> },
     { key: "alien", label: "Alien", icon: <Sparkles className="w-3.5 h-3.5" /> },
+    { key: "cybergrid", label: "Cyber Grid", icon: <Settings className="w-3.5 h-3.5 animate-spin-slow" /> },
+    { key: "prismrain", label: "Prism Rain", icon: <Sparkles className="w-3.5 h-3.5 text-muse-primary" /> },
     { key: "off", label: "Off", icon: null },
 ];
 
 export function PlayerControlsDropdown() {
-    const { shuffleMode, repeatMode, toggleShuffle, setRepeatMode, audioRef, aiDjMode, toggleAiDjMode } = useAudioStore();
+    const { shuffleMode, repeatMode, toggleShuffle, setRepeatMode, audioRef, aiDjMode, toggleAiDjMode } = useAudioData();
+    const { isPlaying } = useAudioPlayback();
     const [speed, setSpeed] = useState(1);
     const [vizMode, setVizMode] = useState<VisualizerMode>("waveform");
 
     // Load saved viz mode
     useEffect(() => {
-        const saved = localStorage.getItem("sonara_viz_mode") as VisualizerMode;
+        const saved = localStorage.getItem("muse_viz_mode") as VisualizerMode;
         if (saved) setVizMode(saved);
     }, []);
 
@@ -42,8 +45,8 @@ export function PlayerControlsDropdown() {
 
     const changeVizMode = (mode: VisualizerMode) => {
         setVizMode(mode);
-        localStorage.setItem("sonara_viz_mode", mode);
-        window.dispatchEvent(new CustomEvent("sonara-viz-mode", { detail: { mode } }));
+        localStorage.setItem("muse_viz_mode", mode);
+        window.dispatchEvent(new CustomEvent("muse-viz-mode", { detail: { mode } }));
     };
 
     const cycleRepeat = () => {
@@ -58,7 +61,7 @@ export function PlayerControlsDropdown() {
     return (
         <Dropdown
             trigger={
-                <button className="text-sonara-text-muted hover:text-sonara-text transition-colors p-1 rounded-lg hover:bg-white/5" aria-label="Player settings">
+                <button className="text-muse-text-muted hover:text-muse-text transition-colors p-1 rounded-lg hover:bg-white/5" aria-label="Player settings">
                     <Settings className="w-4 h-4" />
                 </button>
             }
@@ -71,15 +74,15 @@ export function PlayerControlsDropdown() {
 
             <DropdownItem icon={<Zap className="w-4 h-4" />} onClick={toggleAiDjMode} preventClose>
                 <div className="flex items-center justify-between w-full">
-                    <span className={aiDjMode ? "text-sonara-primary-light font-bold" : ""}>AI-DJ Mode</span>
-                    {aiDjMode && <span className="w-2 h-2 rounded-full bg-sonara-primary animate-pulse" />}
+                    <span className={aiDjMode ? "text-muse-primary-light font-bold" : ""}>AI-DJ Mode</span>
+                    {aiDjMode && <span className="w-2 h-2 rounded-full bg-muse-primary animate-pulse" />}
                 </div>
             </DropdownItem>
 
             <DropdownItem icon={repeatIcon} onClick={cycleRepeat} preventClose>
                 <div className="flex items-center justify-between w-full">
                     <span>Repeat</span>
-                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${repeatMode !== "none" ? "bg-sonara-primary/20 text-sonara-primary-light" : "text-sonara-text-muted"}`}>
+                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${repeatMode !== "none" ? "bg-muse-primary/20 text-muse-primary-light" : "text-muse-text-muted"}`}>
                         {repeatLabel}
                     </span>
                 </div>
@@ -88,7 +91,7 @@ export function PlayerControlsDropdown() {
             <DropdownItem icon={<Shuffle className="w-4 h-4" />} onClick={toggleShuffle} preventClose>
                 <div className="flex items-center justify-between w-full">
                     <span>Shuffle</span>
-                    {shuffleMode && <span className="w-2 h-2 rounded-full bg-sonara-primary animate-pulse" />}
+                    {shuffleMode && <span className="w-2 h-2 rounded-full bg-muse-primary animate-pulse" />}
                 </div>
             </DropdownItem>
 
@@ -101,8 +104,8 @@ export function PlayerControlsDropdown() {
                         key={s.label}
                         onClick={() => changeSpeed(s.value)}
                         className={`px-2 py-1.5 text-[11px] rounded-lg transition-all cursor-pointer ${speed === s.value
-                            ? "bg-sonara-primary/20 text-sonara-primary-light ring-1 ring-sonara-primary/30"
-                            : "text-sonara-text-dim hover:bg-white/5 hover:text-sonara-text"
+                            ? "bg-muse-primary/20 text-muse-primary-light ring-1 ring-muse-primary/30"
+                            : "text-muse-text-dim hover:bg-white/5 hover:text-muse-text"
                             }`}
                     >
                         {s.label}
@@ -119,13 +122,13 @@ export function PlayerControlsDropdown() {
                         key={opt.key}
                         onClick={() => changeVizMode(opt.key)}
                         className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-xs rounded-lg transition-all cursor-pointer ${vizMode === opt.key
-                            ? "bg-sonara-primary/20 text-sonara-primary-light ring-1 ring-sonara-primary/30"
-                            : "text-sonara-text-dim hover:bg-white/5 hover:text-sonara-text"
+                            ? "bg-muse-primary/20 text-muse-primary-light ring-1 ring-muse-primary/30"
+                            : "text-muse-text-dim hover:bg-white/5 hover:text-muse-text"
                             }`}
                     >
                         {opt.icon}
                         <span>{opt.label}</span>
-                        {vizMode === opt.key && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-sonara-primary" />}
+                        {vizMode === opt.key && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-muse-primary" />}
                     </button>
                 ))}
             </div>

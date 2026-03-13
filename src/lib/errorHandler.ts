@@ -1,5 +1,5 @@
 /**
- * Comprehensive error handling and logging system for Sonara
+ * Comprehensive error handling and logging system for MUSE
  * Provides structured error management, logging, and monitoring capabilities
  */
 

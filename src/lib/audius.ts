@@ -11,7 +11,9 @@ async function audiusFetch<T>({ endpoint, params }: AudiusRequestOptions): Promi
     try {
         const url = new URL(`${API_BASE}${endpoint}`);
         if (params) {
-            Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
+            Object.entries(params).forEach(([key, value]) => {
+                if (key && value) url.searchParams.set(key, value);
+            });
         }
         const res = await fetch(url.toString(), {
             headers: { 'x-api-key': API_KEY, Accept: 'application/json' },
@@ -20,7 +22,8 @@ async function audiusFetch<T>({ endpoint, params }: AudiusRequestOptions): Promi
         if (!res.ok) return null;
         const json = await res.json();
         return json?.data ?? null;
-    } catch {
+    } catch (e) {
+        console.warn(`Audius fetch failed for ${endpoint}:`, e);
         return null;
     }
 }

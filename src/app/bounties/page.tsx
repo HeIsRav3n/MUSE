@@ -65,21 +65,21 @@ export default function BountiesPage() {
                     <Trophy className="w-8 h-8 text-yellow-400" />
                     <h1 className="text-3xl font-bold font-display text-white">Discovery Bounties</h1>
                 </div>
-                <p className="text-sonara-text-muted">Earn $SOUND by helping the community discover new music.</p>
+                <p className="text-muse-text-muted">Earn $SOUND by helping the community discover new music.</p>
             </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="glass p-4 rounded-xl border border-white/5">
-                    <p className="text-xs text-sonara-text-muted uppercase tracking-wider mb-1">Total Rewards Distributed</p>
-                    <p className="text-2xl font-bold text-sonara-success">154,200 $SOUND</p>
+                    <p className="text-xs text-muse-text-muted uppercase tracking-wider mb-1">Total Rewards Distributed</p>
+                    <p className="text-2xl font-bold text-muse-success">154,200 $SOUND</p>
                 </div>
                 <div className="glass p-4 rounded-xl border border-white/5">
-                    <p className="text-xs text-sonara-text-muted uppercase tracking-wider mb-1">Active Hunters</p>
-                    <p className="text-2xl font-bold text-sonara-primary-light">1,204</p>
+                    <p className="text-xs text-muse-text-muted uppercase tracking-wider mb-1">Active Hunters</p>
+                    <p className="text-2xl font-bold text-muse-primary-light">1,204</p>
                 </div>
                 <div className="glass p-4 rounded-xl border border-white/5">
-                    <p className="text-xs text-sonara-text-muted uppercase tracking-wider mb-1">Your Earnings</p>
+                    <p className="text-xs text-muse-text-muted uppercase tracking-wider mb-1">Your Earnings</p>
                     <p className="text-2xl font-bold text-white">0 $SOUND</p>
                 </div>
             </div>
@@ -92,8 +92,8 @@ export default function BountiesPage() {
                             key={f}
                             onClick={() => setFilter(f)}
                             className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all capitalize ${filter === f
-                                ? "bg-sonara-primary text-white"
-                                : "bg-white/5 text-sonara-text-muted hover:text-white"}`}
+                                ? "bg-muse-primary text-white"
+                                : "bg-white/5 text-muse-text-muted hover:text-white"}`}
                         >
                             {f}
                         </button>
@@ -104,7 +104,7 @@ export default function BountiesPage() {
                     {bounties
                         .filter(b => filter === "all" || b.difficulty.toLowerCase() === filter)
                         .map((bounty) => (
-                            <div key={bounty.id} className="group relative bg-sonara-card/40 hover:bg-sonara-card border border-white/5 hover:border-sonara-primary/30 rounded-xl p-4 transition-all hover:translate-x-1 cursor-pointer">
+                            <div key={bounty.id} className="group relative bg-muse-card/40 hover:bg-muse-card border border-white/5 hover:border-muse-primary/30 rounded-xl p-4 transition-all hover:translate-x-1 cursor-pointer">
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2 mb-1">
@@ -114,24 +114,24 @@ export default function BountiesPage() {
                                                 }`}>
                                                 {bounty.difficulty}
                                             </span>
-                                            <span className="text-xs text-sonara-text-dim flex items-center gap-1">
+                                            <span className="text-xs text-muse-text-dim flex items-center gap-1">
                                                 <Timer className="w-3 h-3" /> {bounty.timeLeft} left
                                             </span>
                                         </div>
-                                        <h3 className="text-lg font-bold text-white group-hover:text-sonara-primary-light transition-colors">{bounty.title}</h3>
-                                        <p className="text-sm text-sonara-text-muted line-clamp-2">{bounty.description}</p>
+                                        <h3 className="text-lg font-bold text-white group-hover:text-muse-primary-light transition-colors">{bounty.title}</h3>
+                                        <p className="text-sm text-muse-text-muted line-clamp-2">{bounty.description}</p>
                                     </div>
 
                                     <div className="flex flex-col items-end gap-2 shrink-0">
-                                        <span className="text-lg font-bold text-sonara-success bg-sonara-success/10 px-3 py-1 rounded-lg border border-sonara-success/20">
+                                        <span className="text-lg font-bold text-muse-success bg-muse-success/10 px-3 py-1 rounded-lg border border-muse-success/20">
                                             {bounty.reward}
                                         </span>
-                                        <span className="text-xs text-sonara-text-dim">{bounty.participants} hunting</span>
+                                        <span className="text-xs text-muse-text-dim">{bounty.participants} hunting</span>
                                     </div>
                                 </div>
 
                                 <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between opacity-60 group-hover:opacity-100 transition-opacity">
-                                    <span className="text-xs text-sonara-text-muted flex items-center gap-1">
+                                    <span className="text-xs text-muse-text-muted flex items-center gap-1">
                                         <CheckCircle2 className="w-3 h-3" /> Verified by Community
                                     </span>
                                     <button
@@ -144,7 +144,7 @@ export default function BountiesPage() {
                                                 alert(`🎉 Bounty Completed! You earned ${rewardAmount} SOUND.`);
                                             }
                                         }}
-                                        className="text-xs font-bold text-sonara-primary flex items-center gap-1 hover:underline"
+                                        className="text-xs font-bold text-muse-primary flex items-center gap-1 hover:underline"
                                     >
                                         Claim / Complete <ArrowRight className="w-3 h-3" />
                                     </button>

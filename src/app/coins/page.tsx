@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from 'framer-motion';
 import {
-    ArrowUpRight, ArrowDownRight,
+    Search, Filter, TrendingUp, Users, ArrowUpRight, Wallet, Info, Sparkles, Flame, ArrowDownRight,
     X, Rocket
 } from "lucide-react";
-import { mockArtistCoins } from "@/lib/mockData";
+import { artistCoins } from '@/lib/liveData';
 import { formatNumber, formatPercent } from "@/lib/web3";
 import { useEconomyStore } from "@/lib/economyStore";
 
@@ -13,7 +14,7 @@ export default function CoinsPage() {
     const [showLaunchModal, setShowLaunchModal] = useState(false);
     const [sortBy, setSortBy] = useState<"marketCap" | "change" | "volume">("marketCap");
 
-    const sorted = [...mockArtistCoins].sort((a, b) => {
+    const sorted = [...artistCoins].sort((a, b) => {
         if (sortBy === "change") return b.priceChange24h - a.priceChange24h;
         if (sortBy === "volume") return b.volume24h - a.volume24h;
         return b.marketCap - a.marketCap;
@@ -24,7 +25,7 @@ export default function CoinsPage() {
             <div className="flex items-start justify-between">
                 <div>
                     <h1 className="text-2xl lg:text-3xl font-display font-bold gradient-text">Artist Coins</h1>
-                    <p className="text-sm text-sonara-text-muted mt-1">
+                    <p className="text-sm text-muse-text-muted mt-1">
                         Invest in artist micro-economies through tokenized bonding curves
                     </p>
                 </div>
@@ -36,25 +37,25 @@ export default function CoinsPage() {
             {/* Market Overview */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <div className="stat-card">
-                    <p className="text-xs text-sonara-text-muted">Total Market Cap</p>
-                    <p className="text-xl font-bold font-display text-sonara-text mt-1">
-                        ${formatNumber(mockArtistCoins.reduce((s, c) => s + c.marketCap, 0))}
+                    <p className="text-xs text-muse-text-muted">Total Market Cap</p>
+                    <p className="text-xl font-bold font-display text-muse-text mt-1">
+                        ${formatNumber(artistCoins.reduce((s, c) => s + c.marketCap, 0))}
                     </p>
                 </div>
                 <div className="stat-card">
-                    <p className="text-xs text-sonara-text-muted">24h Volume</p>
-                    <p className="text-xl font-bold font-display text-sonara-text mt-1">
-                        ${formatNumber(mockArtistCoins.reduce((s, c) => s + c.volume24h, 0))}
+                    <p className="text-xs text-muse-text-muted">24h Volume</p>
+                    <p className="text-xl font-bold font-display text-muse-text mt-1">
+                        ${formatNumber(artistCoins.reduce((s, c) => s + c.volume24h, 0))}
                     </p>
                 </div>
                 <div className="stat-card">
-                    <p className="text-xs text-sonara-text-muted">Active Coins</p>
-                    <p className="text-xl font-bold font-display text-sonara-text mt-1">{mockArtistCoins.length}</p>
+                    <p className="text-xs text-muse-text-muted">Active Coins</p>
+                    <p className="text-xl font-bold font-display text-muse-text mt-1">{artistCoins.length}</p>
                 </div>
                 <div className="stat-card">
-                    <p className="text-xs text-sonara-text-muted">Total Holders</p>
-                    <p className="text-xl font-bold font-display text-sonara-text mt-1">
-                        {formatNumber(mockArtistCoins.reduce((s, c) => s + c.holders, 0))}
+                    <p className="text-xs text-muse-text-muted">Total Holders</p>
+                    <p className="text-xl font-bold font-display text-muse-text mt-1">
+                        {formatNumber(artistCoins.reduce((s, c) => s + c.holders, 0))}
                     </p>
                 </div>
             </div>
@@ -66,8 +67,8 @@ export default function CoinsPage() {
                         key={s}
                         onClick={() => setSortBy(s)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${sortBy === s
-                            ? "bg-sonara-primary text-white"
-                            : "bg-white/5 text-sonara-text-dim hover:bg-white/10 border border-sonara-border/50"
+                            ? "bg-muse-primary text-white"
+                            : "bg-white/5 text-muse-text-dim hover:bg-white/10 border border-muse-border/50"
                             }`}
                     >
                         {s === "marketCap" ? "Market Cap" : s === "change" ? "24h Change" : "Volume"}
@@ -83,15 +84,15 @@ export default function CoinsPage() {
                         <div key={coin.id} className="glass rounded-2xl p-5 glass-hover cursor-pointer group">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sonara-primary/30 to-sonara-accent/20 flex items-center justify-center">
+                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-muse-primary/30 to-muse-accent/20 flex items-center justify-center">
                                         <span className="text-lg font-bold gradient-text">{coin.symbol[1]}</span>
                                     </div>
                                     <div>
-                                        <p className="text-sm font-semibold text-sonara-text">{coin.name}</p>
-                                        <p className="text-xs text-sonara-text-muted">{coin.symbol}</p>
+                                        <p className="text-sm font-semibold text-muse-text">{coin.name}</p>
+                                        <p className="text-xs text-muse-text-muted">{coin.symbol}</p>
                                     </div>
                                 </div>
-                                <span className={`text-xs font-mono font-semibold flex items-center gap-0.5 ${isPositive ? "text-sonara-success" : "text-sonara-danger"
+                                <span className={`text-xs font-mono font-semibold flex items-center gap-0.5 ${isPositive ? "text-muse-success" : "text-muse-danger"
                                     }`}>
                                     {isPositive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                                     {formatPercent(coin.priceChange24h)}
@@ -107,7 +108,7 @@ export default function CoinsPage() {
                                     return (
                                         <div
                                             key={i}
-                                            className={`flex-1 rounded-t ${isPositive ? "bg-sonara-success/40" : "bg-sonara-danger/40"}`}
+                                            className={`flex-1 rounded-t ${isPositive ? "bg-muse-success/40" : "bg-muse-danger/40"}`}
                                             style={{ height: `${Math.max(h, 5)}%` }}
                                         />
                                     );
@@ -115,22 +116,22 @@ export default function CoinsPage() {
                             </div>
 
                             <div className="flex items-center justify-between mb-3">
-                                <p className="text-2xl font-bold font-mono text-sonara-text">${coin.price.toFixed(2)}</p>
-                                <p className="text-xs text-sonara-text-muted">by {coin.artistName}</p>
+                                <p className="text-2xl font-bold font-mono text-muse-text">${coin.price.toFixed(2)}</p>
+                                <p className="text-xs text-muse-text-muted">by {coin.artistName}</p>
                             </div>
 
                             <div className="grid grid-cols-3 gap-2 text-center mb-4">
                                 <div className="glass rounded-lg py-2">
-                                    <p className="text-[10px] text-sonara-text-muted">Mkt Cap</p>
-                                    <p className="text-xs font-mono font-semibold text-sonara-text">${formatNumber(coin.marketCap)}</p>
+                                    <p className="text-[10px] text-muse-text-muted">Mkt Cap</p>
+                                    <p className="text-xs font-mono font-semibold text-muse-text">${formatNumber(coin.marketCap)}</p>
                                 </div>
                                 <div className="glass rounded-lg py-2">
-                                    <p className="text-[10px] text-sonara-text-muted">Holders</p>
-                                    <p className="text-xs font-mono font-semibold text-sonara-text">{formatNumber(coin.holders)}</p>
+                                    <p className="text-[10px] text-muse-text-muted">Holders</p>
+                                    <p className="text-xs font-mono font-semibold text-muse-text">{formatNumber(coin.holders)}</p>
                                 </div>
                                 <div className="glass rounded-lg py-2">
-                                    <p className="text-[10px] text-sonara-text-muted">Volume</p>
-                                    <p className="text-xs font-mono font-semibold text-sonara-text">${formatNumber(coin.volume24h)}</p>
+                                    <p className="text-[10px] text-muse-text-muted">Volume</p>
+                                    <p className="text-xs font-mono font-semibold text-muse-text">${formatNumber(coin.volume24h)}</p>
                                 </div>
                             </div>
 
@@ -176,34 +177,34 @@ export default function CoinsPage() {
                         <div className="flex items-center justify-between mb-5">
                             <h3 className="text-lg font-display font-bold gradient-text">Launch Artist Coin</h3>
                             <button onClick={() => setShowLaunchModal(false)} className="p-1 rounded-lg hover:bg-white/5">
-                                <X className="w-5 h-5 text-sonara-text-muted" />
+                                <X className="w-5 h-5 text-muse-text-muted" />
                             </button>
                         </div>
                         <div className="space-y-4">
                             <div>
-                                <label className="text-xs text-sonara-text-muted mb-1 block">Coin Name</label>
-                                <input className="w-full px-4 py-3 rounded-xl bg-sonara-surface border border-sonara-border text-sonara-text focus:outline-none focus:border-sonara-primary/50" placeholder="e.g. Vex Coin" />
+                                <label className="text-xs text-muse-text-muted mb-1 block">Coin Name</label>
+                                <input className="w-full px-4 py-3 rounded-xl bg-muse-surface border border-muse-border text-muse-text focus:outline-none focus:border-muse-primary/50" placeholder="e.g. Vex Coin" />
                             </div>
                             <div>
-                                <label className="text-xs text-sonara-text-muted mb-1 block">Symbol</label>
-                                <input className="w-full px-4 py-3 rounded-xl bg-sonara-surface border border-sonara-border text-sonara-text focus:outline-none focus:border-sonara-primary/50" placeholder="e.g. $VEX" />
+                                <label className="text-xs text-muse-text-muted mb-1 block">Symbol</label>
+                                <input className="w-full px-4 py-3 rounded-xl bg-muse-surface border border-muse-border text-muse-text focus:outline-none focus:border-muse-primary/50" placeholder="e.g. $VEX" />
                             </div>
                             <div>
-                                <label className="text-xs text-sonara-text-muted mb-1 block">Initial Supply</label>
-                                <input type="number" className="w-full px-4 py-3 rounded-xl bg-sonara-surface border border-sonara-border text-sonara-text focus:outline-none focus:border-sonara-primary/50" placeholder="1,000,000" />
+                                <label className="text-xs text-muse-text-muted mb-1 block">Initial Supply</label>
+                                <input type="number" className="w-full px-4 py-3 rounded-xl bg-muse-surface border border-muse-border text-muse-text focus:outline-none focus:border-muse-primary/50" placeholder="1,000,000" />
                             </div>
                             <div className="glass rounded-xl p-3 space-y-2">
                                 <div className="flex justify-between text-xs">
-                                    <span className="text-sonara-text-muted">Bonding Curve</span>
-                                    <span className="text-sonara-primary-light">Linear</span>
+                                    <span className="text-muse-text-muted">Bonding Curve</span>
+                                    <span className="text-muse-primary-light">Linear</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
-                                    <span className="text-sonara-text-muted">Platform Fee</span>
-                                    <span className="text-sonara-text">2%</span>
+                                    <span className="text-muse-text-muted">Platform Fee</span>
+                                    <span className="text-muse-text">2%</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
-                                    <span className="text-sonara-text-muted">Creator Share</span>
-                                    <span className="text-sonara-success">5% of all trades</span>
+                                    <span className="text-muse-text-muted">Creator Share</span>
+                                    <span className="text-muse-success">5% of all trades</span>
                                 </div>
                             </div>
                             <button className="w-full btn-primary py-3 justify-center text-base">

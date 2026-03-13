@@ -24,7 +24,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://telegram.org https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; media-src 'self' https:;"
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; media-src 'self' https:;"
           }
         ]
       }
@@ -57,6 +57,74 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'i.scdn.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'validator.stuffisup.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.audius.exists.rocks',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.figment.io',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.audiusindex.org',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.bdnodes.net',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.audius.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'audius.co',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.rickyrombo.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.monophonic.digital',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.theblueprint.xyz',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.cloud',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.network',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.fm',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.shakespearetech.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'shakespearetech.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.audius-nodes.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'audius-nodes.com',
       }
     ],
     formats: ['image/avif', 'image/webp'],
@@ -123,6 +191,9 @@ const nextConfig = {
 
   // Experimental features
   experimental: {},
+
+  // Transpile packages that use ESM or need build-time transpilation
+  transpilePackages: ['recharts', 'framer-motion', 'lucide-react'],
 
   // Environment variables
   env: {

@@ -7,19 +7,45 @@ import type { AudiusArtwork } from '@/components/ui/AudiusImage';
 const API_BASE = 'https://api.audius.co/v1';
 const API_KEY = process.env.NEXT_PUBLIC_AUDIUS_API_KEY || '0xae4d3e296787e296b704511d724e7fac088ce029';
 
+const apiCache = new Map<string, { data: any; expiry: number }>();
+const CACHE_TTL = 300000; // 5 minutes
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function audiusFetch<T>(endpoint: string, params?: Record<string, string>): Promise<T | null> {
+    let url: URL;
     try {
-        const url = new URL(`${API_BASE}${endpoint}`);
+        url = new URL(`${API_BASE}${endpoint}`);
         if (params) {
-            Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+            Object.entries(params).forEach(([k, v]) => {
+                if (k && v) url.searchParams.set(k, v);
+            });
         }
-        const res = await fetch(url.toString(), {
+    } catch (e) {
+        console.error("Invalid URL in audiusFetch:", e);
+        return null;
+    }
+    const cacheKey = url.toString();
+
+    // Check cache
+    const cached = apiCache.get(cacheKey);
+    if (cached && cached.expiry > Date.now()) {
+        return cached.data;
+    }
+
+    try {
+        const res = await fetch(cacheKey, {
             headers: { 'x-api-key': API_KEY, Accept: 'application/json' },
+            next: { revalidate: 300 } // Next.js level caching
         });
         if (!res.ok) return null;
         const json = await res.json();
-        return json?.data ?? null;
+        const data = json?.data ?? null;
+
+        // Save to cache
+        if (data) {
+            apiCache.set(cacheKey, { data, expiry: Date.now() + CACHE_TTL });
+        }
+        return data;
     } catch {
         return null;
     }
@@ -55,13 +81,14 @@ export interface SdkUser {
 // Map snake_case API responses to camelCase types
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapTrack(raw: any): SdkTrack {
+    const id = raw.id || raw.track_id;
     return {
-        id: raw.id,
-        title: raw.title,
+        id: id ? String(id) : '',
+        title: raw.title || 'Unknown Track',
         user: {
-            id: raw.user?.id,
-            name: raw.user?.name,
-            handle: raw.user?.handle,
+            id: raw.user?.id || '',
+            name: raw.user?.name || 'Unknown Artist',
+            handle: raw.user?.handle || '',
             profilePicture: raw.user?.profile_picture,
         },
         artwork: raw.artwork,
@@ -106,8 +133,9 @@ export async function sdkGetTrack(trackId: string): Promise<SdkTrack | null> {
     return data ? mapTrack(data) : null;
 }
 
-export function sdkStreamUrl(trackId: string): string {
-    return `${API_BASE}/tracks/${trackId}/stream?api_key=${API_KEY}`;
+export function sdkStreamUrl(trackId: string | undefined): string {
+    if (!trackId || trackId === 'undefined') return '';
+    return `${API_BASE}/tracks/${trackId}/stream?api_key=${API_KEY}&app_name=MUSE`;
 }
 
 // Format helpers
