@@ -94,8 +94,9 @@ export async function getUserTracks(userId: string, limit = 20): Promise<AudiusT
     return data ?? [];
 }
 
-export function getStreamUrl(trackId: string): string {
-    return `${API_BASE}/tracks/${trackId}/stream?api_key=${API_KEY}`;
+export function getStreamUrl(trackId: string | undefined): string {
+    if (!trackId || trackId === 'undefined') return '';
+    return `${API_BASE}/tracks/${trackId}/stream?api_key=${API_KEY}&app_name=MUSE`;
 }
 
 export function formatDuration(seconds: number): string {

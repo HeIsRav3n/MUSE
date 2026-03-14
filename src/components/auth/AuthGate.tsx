@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useAudiusAuth } from "@/context/AudiusAuthContext";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
@@ -18,6 +19,17 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     }
 
     // Show loading while checking auth state
+    useEffect(() => {
+        if (!isInitialized) {
+            const timer = setTimeout(() => {
+                console.warn("Auth initialization timed out, forcing initialized state");
+                // We can't directly set isInitialized from here as it's in the context,
+                // but we can at least log it. The better fix is in the Provider.
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [isInitialized]);
+
     if (!isInitialized) {
         return (
             <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">

@@ -267,6 +267,14 @@ export function MusicPlayer() {
 
         // Load the new track
         currentSrcRef.current = currentTrack.audioUrl;
+        
+        if (!currentTrack.audioUrl) {
+            console.error("Missing audioUrl for track:", currentTrack.title);
+            setError("Audio source missing");
+            setIsLoading(false);
+            return;
+        }
+
         audio.src = currentTrack.audioUrl;
         audio.load();
         audio.play().then(() => {

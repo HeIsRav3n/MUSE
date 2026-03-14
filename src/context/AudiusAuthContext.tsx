@@ -62,15 +62,29 @@ export function AudiusAuthProvider({ children }: { children: ReactNode }) {
 
     // Restore from localStorage on mount
     useEffect(() => {
+        let mounted = true;
         try {
             if (typeof localStorage !== "undefined") {
                 const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
+                if (stored && mounted) {
                     setUser(JSON.parse(stored));
                 }
             }
-        } catch { }
-        setIsInitialized(true);
+        } catch (e) {
+            console.warn("Failed to restore auth from localStorage:", e);
+        } finally {
+            if (mounted) setIsInitialized(true);
+        }
+        
+        // Safety timeout to ensure app always unblocks
+        const safetyTimer = setTimeout(() => {
+            if (mounted) setIsInitialized(true);
+        }, 3000);
+
+        return () => {
+            mounted = false;
+            clearTimeout(safetyTimer);
+        };
     }, []);
 
     // Load CDN SDK and init OAuth
